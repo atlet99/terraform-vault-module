@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [FEATURE] - implement common auth methods and secret engines; (#2)
 - [FEATURE] - add database, PKI, AWS, and GitHub backend configurations;
 
+### Fixed
+
+- [FIX] - terraform requirements;
+
 ## [1.0.1] - 2026-03-02
 
 ### Added
