@@ -89,6 +89,16 @@ output "audit_device_paths" {
   value       = { for k, v in vault_audit.this : k => v.path }
 }
 
+output "audit_request_headers" {
+  description = "Map of audit request header keys to their names and IDs."
+  value = {
+    for k, v in vault_audit_request_header.this : k => {
+      name = v.name
+      id   = v.id
+    }
+  }
+}
+
 ###############################################################################
 # KV-V2 Secrets
 ###############################################################################
@@ -112,6 +122,11 @@ output "kv_secret_v2_paths" {
 output "kv_secret_v2_metadata" {
   description = "Map of KV-V2 secret keys to their metadata."
   value       = { for k, v in vault_kv_secret_v2.this : k => v.metadata }
+}
+
+output "kv_secret_backend_v2_config" {
+  description = "Map of KV-V2 secret backend config keys to their mount paths."
+  value       = { for k, v in vault_kv_secret_backend_v2.this : k => v.mount }
 }
 
 ###############################################################################
