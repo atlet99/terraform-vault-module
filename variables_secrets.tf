@@ -113,6 +113,113 @@ variable "pki_roles" {
   default = {}
 }
 
+variable "pki_backend_config_cas" {
+  description = "A map of PKI backend CA configurations."
+  type = map(object({
+    backend    = string
+    pem_bundle = string
+    namespace  = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_root_certs" {
+  description = "A map of PKI root certificate configurations."
+  type = map(object({
+    backend              = string
+    type                 = string
+    common_name          = string
+    alt_names            = optional(list(string))
+    ip_sans              = optional(list(string))
+    uri_sans             = optional(list(string))
+    other_sans           = optional(list(string))
+    ttl                  = optional(string)
+    format               = optional(string)
+    private_key_format   = optional(string)
+    key_type             = optional(string)
+    key_bits             = optional(number)
+    signature_bits       = optional(number)
+    max_path_length      = optional(number)
+    exclude_cn_from_sans = optional(bool)
+    ou                   = optional(string)
+    organization         = optional(string)
+    country              = optional(string)
+    locality             = optional(string)
+    province             = optional(string)
+    street_address       = optional(string)
+    postal_code          = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_intermediate_cert_requests" {
+  description = "A map of PKI intermediate certificate request configurations."
+  type = map(object({
+    backend              = string
+    type                 = string
+    common_name          = string
+    alt_names            = optional(list(string))
+    ip_sans              = optional(list(string))
+    uri_sans             = optional(list(string))
+    other_sans           = optional(list(string))
+    format               = optional(string)
+    private_key_format   = optional(string)
+    key_type             = optional(string)
+    key_bits             = optional(number)
+    signature_bits       = optional(number)
+    exclude_cn_from_sans = optional(bool)
+    ou                   = optional(string)
+    organization         = optional(string)
+    country              = optional(string)
+    locality             = optional(string)
+    province             = optional(string)
+    street_address       = optional(string)
+    postal_code          = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_intermediate_set_signeds" {
+  description = "A map of signed intermediate certificate configurations."
+  type = map(object({
+    backend     = string
+    certificate = string
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_config_auto_tidies" {
+  description = "A map of PKI auto-tidy configurations."
+  type = map(object({
+    backend                                  = string
+    enabled                                  = optional(bool)
+    interval_duration                        = optional(string)
+    issuer_safety_buffer                     = optional(string)
+    maintain_stored_certificate_counts       = optional(bool)
+    max_startup_backoff_duration             = optional(string)
+    min_startup_backoff_duration             = optional(string)
+    pause_duration                           = optional(string)
+    publish_stored_certificate_count_metrics = optional(bool)
+    revocation_queue_safety_buffer           = optional(string)
+    safety_buffer                            = optional(string)
+    tidy_acme                                = optional(bool)
+    tidy_cert_metadata                       = optional(bool)
+    tidy_cert_store                          = optional(bool)
+    tidy_cmpv2_nonce_store                   = optional(bool)
+    tidy_cross_cluster_revoked_certs         = optional(bool)
+    tidy_expired_issuers                     = optional(bool)
+    tidy_move_legacy_ca_bundle               = optional(bool)
+    tidy_revocation_queue                    = optional(bool)
+    tidy_revoked_cert_issuer_associations    = optional(bool)
+    tidy_revoked_certs                       = optional(bool)
+    namespace                                = optional(string)
+  }))
+  default = {}
+}
+
 variable "pki_secret_backend_config_acmes" {
   description = "A map of PKI ACME configurations."
   type = map(object({

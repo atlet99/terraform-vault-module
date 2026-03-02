@@ -75,6 +75,47 @@ output "pki_secret_backend_acme_eabs" {
   }
 }
 
+output "pki_backend_config_cas" {
+  description = "Map of PKI backend CA config keys to their backend paths."
+  value       = { for k, v in vault_pki_secret_backend_config_ca.this : k => v.backend }
+}
+
+output "pki_backend_root_certs" {
+  description = "Map of PKI root certificate keys to their certificate details."
+  value = {
+    for k, v in vault_pki_secret_backend_root_cert.this : k => {
+      certificate   = v.certificate
+      issuing_ca    = v.issuing_ca
+      serial_number = v.serial_number
+      issuer_id     = v.issuer_id
+    }
+  }
+}
+
+output "pki_backend_intermediate_cert_requests" {
+  description = "Map of PKI intermediate CSR keys to their CSR details."
+  value = {
+    for k, v in vault_pki_secret_backend_intermediate_cert_request.this : k => {
+      csr = v.csr
+    }
+  }
+}
+
+output "pki_backend_intermediate_set_signeds" {
+  description = "Map of signed intermediate cert keys to their imported status."
+  value = {
+    for k, v in vault_pki_secret_backend_intermediate_set_signed.this : k => {
+      imported_issuers = v.imported_issuers
+      imported_keys    = v.imported_keys
+    }
+  }
+}
+
+output "pki_backend_config_auto_tidies" {
+  description = "Map of PKI auto-tidy keys to their backend paths."
+  value       = { for k, v in vault_pki_secret_backend_config_auto_tidy.this : k => v.backend }
+}
+
 output "aws_roles" {
   description = "Map of AWS role keys to their names and backend paths."
   value = {
