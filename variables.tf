@@ -24,6 +24,7 @@ variable "mounts" {
     delegated_auth_accessors     = optional(list(string), null)
     plugin_version               = optional(string, null)
     identity_token_key           = optional(string, null)
+    force_no_cache               = optional(bool, false)
   }))
   default = {}
 }
@@ -104,6 +105,8 @@ variable "kubernetes_auth_backends" {
     disable_local_ca_jwt              = optional(bool, false)
     pem_keys                          = optional(list(string), null)
     use_annotations_as_alias_metadata = optional(bool, null)
+    token_reviewer_jwt_wo             = optional(string, null)
+    token_reviewer_jwt_wo_version     = optional(number, null)
 
     roles = optional(map(object({
       role_name                                = string
@@ -231,6 +234,33 @@ variable "identity_groups" {
     external_member_entity_ids = optional(bool, false)
     external_member_group_ids  = optional(bool, false)
     namespace                  = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Identity Aliases
+###############################################################################
+
+variable "identity_entity_aliases" {
+  description = "Map of identity entity aliases to create."
+  type = map(object({
+    name            = string
+    mount_accessor  = string
+    canonical_id    = string
+    custom_metadata = optional(map(string), null)
+    namespace       = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_group_aliases" {
+  description = "Map of identity group aliases to create."
+  type = map(object({
+    name           = string
+    mount_accessor = string
+    canonical_id   = string
+    namespace      = optional(string, null)
   }))
   default = {}
 }

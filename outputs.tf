@@ -236,3 +236,29 @@ output "identity_group_ids" {
   description = "Map of identity group keys to their IDs."
   value       = { for k, v in vault_identity_group.this : k => v.id }
 }
+
+###############################################################################
+# Identity Aliases
+###############################################################################
+
+output "identity_entity_aliases" {
+  description = "Full identity entity alias objects keyed by variable key. Contains name, id, and canonical_id."
+  value = {
+    for k, v in vault_identity_entity_alias.this : k => {
+      name         = v.name
+      id           = v.id
+      canonical_id = v.canonical_id
+    }
+  }
+}
+
+output "identity_group_aliases" {
+  description = "Full identity group alias objects keyed by variable key. Contains name, id, and canonical_id."
+  value = {
+    for k, v in vault_identity_group_alias.this : k => {
+      name         = v.name
+      id           = v.id
+      canonical_id = v.canonical_id
+    }
+  }
+}

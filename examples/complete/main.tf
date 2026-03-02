@@ -10,10 +10,11 @@ module "vault" {
 
   mounts = {
     kv = {
-      path        = "secret"
-      type        = "kv"
-      description = "KV Version 2 secret engine"
-      options     = { version = "2" }
+      path           = "secret"
+      type           = "kv"
+      description    = "KV Version 2 secret engine"
+      options        = { version = "2" }
+      force_no_cache = true
     }
 
     transit = {
@@ -187,6 +188,26 @@ module "vault" {
       policies = ["admin"]
     }
   }
+
+  # -- Identity Aliases --------------------------------------------------------
+  # Note: Aliases link external identifiers to Vault entities/groups.
+  # The mount_accessor can be obtained from the auth_backend outputs.
+
+  identity_entity_aliases = {
+    john_kubernetes = {
+      name           = "john-doe-sa"
+      mount_accessor = "auth_kubernetes_12345678" # Example accessor
+      canonical_id   = "pending"                  # Replaced by entity ID in practice
+    }
+  }
+
+  identity_group_aliases = {
+    platform_kubernetes = {
+      name           = "platform-team-sa"
+      mount_accessor = "auth_kubernetes_12345678"
+      canonical_id   = "pending"
+    }
+  }
 }
 
 ###############################################################################
@@ -215,4 +236,12 @@ output "identity_entity_ids" {
 
 output "identity_group_ids" {
   value = module.vault.identity_group_ids
+}
+
+output "identity_entity_aliases" {
+  value = module.vault.identity_entity_aliases
+}
+
+output "identity_group_aliases" {
+  value = module.vault.identity_group_aliases
 }
