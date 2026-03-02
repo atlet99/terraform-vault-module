@@ -516,3 +516,126 @@ resource "vault_github_auth_backend" "this" {
     }
   }
 }
+###############################################################################
+# SSH Secret Backend (Phase 4)
+###############################################################################
+
+resource "vault_ssh_secret_backend_role" "this" {
+  for_each = var.ssh_roles
+
+  name                     = each.value.name
+  backend                  = each.value.backend
+  key_type                 = each.value.key_type
+  allow_bare_domains       = each.value.allow_bare_domains
+  allow_host_certificates  = each.value.allow_host_certificates
+  allow_subdomains         = each.value.allow_subdomains
+  allow_user_certificates  = each.value.allow_user_certificates
+  allow_user_key_ids       = each.value.allow_user_key_ids
+  allowed_critical_options = each.value.allowed_critical_options
+  allowed_domains_template = each.value.allowed_domains_template
+  allowed_domains          = each.value.allowed_domains
+  cidr_list                = each.value.cidr_list
+  allowed_extensions       = each.value.allowed_extensions
+  default_extensions       = each.value.default_extensions
+  default_critical_options = each.value.default_critical_options
+  allowed_users_template   = each.value.allowed_users_template
+  allowed_users            = each.value.allowed_users
+  default_user             = each.value.default_user
+  default_user_template    = each.value.default_user_template
+  key_id_format            = each.value.key_id_format
+  algorithm_signer         = each.value.algorithm_signer
+  max_ttl                  = each.value.max_ttl
+  ttl                      = each.value.ttl
+  not_before_duration      = each.value.not_before_duration
+  allow_empty_principals   = each.value.allow_empty_principals
+  namespace                = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "allowed_user_key_config" {
+    for_each = each.value.allowed_user_key_config != null ? each.value.allowed_user_key_config : []
+    content {
+      type    = allowed_user_key_config.value.type
+      lengths = allowed_user_key_config.value.lengths
+    }
+  }
+}
+
+###############################################################################
+# Token Auth Backend Roles (Phase 4)
+###############################################################################
+
+resource "vault_token_auth_backend_role" "this" {
+  for_each = var.token_auth_backend_roles
+
+  role_name                = each.value.role_name
+  allowed_policies         = each.value.allowed_policies
+  allowed_policies_glob    = each.value.allowed_policies_glob
+  disallowed_policies      = each.value.disallowed_policies
+  disallowed_policies_glob = each.value.disallowed_policies_glob
+  orphan                   = each.value.orphan
+  allowed_entity_aliases   = each.value.allowed_entity_aliases
+  renewable                = each.value.renewable
+  path_suffix              = each.value.path_suffix
+  token_ttl                = each.value.token_ttl
+  token_max_ttl            = each.value.token_max_ttl
+  token_period             = each.value.token_period
+  token_explicit_max_ttl   = each.value.token_explicit_max_ttl
+  token_no_default_policy  = each.value.token_no_default_policy
+  token_num_uses           = each.value.token_num_uses
+  token_type               = each.value.token_type
+  token_bound_cidrs        = each.value.token_bound_cidrs
+  namespace                = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Audit Request Headers (Phase 4)
+###############################################################################
+
+resource "vault_audit_request_header" "this" {
+  for_each = var.audit_request_headers
+
+  name      = each.value.name
+  hmac      = each.value.hmac
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Identity OIDC & MFA (Phase 4)
+###############################################################################
+
+resource "vault_identity_oidc_key" "this" {
+  for_each = var.identity_oidc_keys
+
+  name               = each.value.name
+  algorithm          = each.value.algorithm
+  allowed_client_ids = each.value.allowed_client_ids
+  verification_ttl   = each.value.verification_ttl
+  rotation_period    = each.value.rotation_period
+  namespace          = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_identity_oidc_client" "this" {
+  for_each = var.identity_oidc_clients
+
+  name             = each.value.name
+  key              = each.value.key
+  redirect_uris    = each.value.redirect_uris
+  assignments      = each.value.assignments
+  id_token_ttl     = each.value.id_token_ttl
+  access_token_ttl = each.value.access_token_ttl
+  client_type      = each.value.client_type
+  namespace        = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_identity_mfa_totp" "this" {
+  for_each = var.identity_mfa_totp
+
+  issuer                  = each.value.issuer
+  period                  = each.value.period
+  key_size                = each.value.key_size
+  qr_size                 = each.value.qr_size
+  algorithm               = each.value.algorithm
+  digits                  = each.value.digits
+  skew                    = each.value.skew
+  max_validation_attempts = each.value.max_validation_attempts
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}

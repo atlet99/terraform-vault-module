@@ -332,6 +332,73 @@ module "vault" {
       canonical_id   = "pending"
     }
   }
+
+  # -- SSH Roles (Phase 4) ----------------------------------------------------
+
+  ssh_roles = {
+    otp = {
+      name     = "otp-role"
+      backend  = "ssh"
+      key_type = "otp"
+    }
+
+    ca = {
+      name                    = "ca-role"
+      backend                 = "ssh"
+      key_type                = "ca"
+      allow_user_certificates = true
+      allowed_users           = "ubuntu,admin"
+      ttl                     = "1h"
+    }
+  }
+
+  # -- Token Roles (Phase 4) --------------------------------------------------
+
+  token_auth_backend_roles = {
+    utility = {
+      role_name        = "utility-token"
+      allowed_policies = ["readonly"]
+      orphan           = true
+      renewable        = true
+      token_ttl        = 3600
+    }
+  }
+
+  # -- Audit Headers (Phase 4) ------------------------------------------------
+
+  audit_request_headers = {
+    x_forwarded_for = {
+      name = "X-Forwarded-For"
+      hmac = false
+    }
+  }
+
+  # -- Identity OIDC & MFA (Phase 4) -------------------------------------------
+
+  identity_oidc_keys = {
+    default = {
+      name             = "default-key"
+      algorithm        = "RS256"
+      verification_ttl = 86400
+    }
+  }
+
+  identity_oidc_clients = {
+    web_app = {
+      name          = "web-app"
+      key           = "default-key"
+      redirect_uris = ["http://localhost:3000/callback"]
+      client_type   = "confidential"
+    }
+  }
+
+  identity_mfa_totp = {
+    google_auth = {
+      issuer  = "Vault-Example"
+      digits  = 6
+      qr_size = 200
+    }
+  }
 }
 
 ###############################################################################

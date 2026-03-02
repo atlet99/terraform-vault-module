@@ -514,3 +514,120 @@ variable "github_auth_backends" {
   }))
   default = {}
 }
+# -- Phase 4 Improvements ----------------------------------------------------
+
+variable "ssh_roles" {
+  description = "Map of SSH secret backend roles."
+  type = map(object({
+    name                     = string
+    backend                  = string
+    key_type                 = string
+    allow_bare_domains       = optional(bool, false)
+    allow_host_certificates  = optional(bool, false)
+    allow_subdomains         = optional(bool, false)
+    allow_user_certificates  = optional(bool, false)
+    allow_user_key_ids       = optional(bool, false)
+    allowed_critical_options = optional(string, null)
+    allowed_domains_template = optional(bool, null)
+    allowed_domains          = optional(string, null)
+    cidr_list                = optional(string, null)
+    allowed_extensions       = optional(string, null)
+    default_extensions       = optional(map(string), null)
+    default_critical_options = optional(map(string), null)
+    allowed_users_template   = optional(bool, false)
+    allowed_users            = optional(string, null)
+    default_user             = optional(string, null)
+    default_user_template    = optional(bool, null)
+    key_id_format            = optional(string, null)
+    algorithm_signer         = optional(string, null)
+    max_ttl                  = optional(string, null)
+    ttl                      = optional(string, null)
+    not_before_duration      = optional(string, null)
+    allow_empty_principals   = optional(bool, false)
+    allowed_user_key_config = optional(list(object({
+      type    = string
+      lengths = list(number)
+    })), null)
+    namespace = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "token_auth_backend_roles" {
+  description = "Map of Token auth backend roles."
+  type = map(object({
+    role_name                = string
+    allowed_policies         = optional(set(string), null)
+    allowed_policies_glob    = optional(set(string), null)
+    disallowed_policies      = optional(set(string), null)
+    disallowed_policies_glob = optional(set(string), null)
+    orphan                   = optional(bool, false)
+    allowed_entity_aliases   = optional(set(string), null)
+    renewable                = optional(bool, true)
+    path_suffix              = optional(string, "")
+    token_ttl                = optional(number, null)
+    token_max_ttl            = optional(number, null)
+    token_period             = optional(number, null)
+    token_explicit_max_ttl   = optional(number, null)
+    token_no_default_policy  = optional(bool, null)
+    token_num_uses           = optional(number, null)
+    token_type               = optional(string, null)
+    token_bound_cidrs        = optional(list(string), null)
+    namespace                = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "audit_request_headers" {
+  description = "Map of Audit request headers to track."
+  type = map(object({
+    name      = string
+    hmac      = optional(bool, false)
+    namespace = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_oidc_keys" {
+  description = "Map of Identity OIDC keys."
+  type = map(object({
+    name               = string
+    algorithm          = optional(string, "RS256")
+    allowed_client_ids = optional(list(string), null)
+    verification_ttl   = optional(number, null)
+    rotation_period    = optional(number, null)
+    namespace          = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_oidc_clients" {
+  description = "Map of Identity OIDC clients."
+  type = map(object({
+    name             = string
+    key              = optional(string, "default")
+    redirect_uris    = optional(list(string), null)
+    assignments      = optional(list(string), null)
+    id_token_ttl     = optional(number, null)
+    access_token_ttl = optional(number, null)
+    client_type      = optional(string, "confidential")
+    namespace        = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_mfa_totp" {
+  description = "Map of Identity MFA TOTP methods."
+  type = map(object({
+    issuer                  = string
+    period                  = optional(number, 30)
+    key_size                = optional(number, 20)
+    qr_size                 = optional(number, 200)
+    algorithm               = optional(string, "SHA1")
+    digits                  = optional(number, 6)
+    skew                    = optional(number, 1)
+    max_validation_attempts = optional(number, 5)
+    namespace               = optional(string, null)
+  }))
+  default = {}
+}
