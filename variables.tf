@@ -514,6 +514,338 @@ variable "github_auth_backends" {
   }))
   default = {}
 }
+
+# -- Phase 6 Improvements ----------------------------------------------------
+
+variable "aws_auth_backends" {
+  description = "Map of AWS auth backends along with their client configurations."
+  type = map(object({
+    path                       = string
+    description                = optional(string, null)
+    namespace                  = optional(string, null)
+    access_key                 = optional(string, null)
+    secret_key                 = optional(string, null)
+    ec2_endpoint               = optional(string, null)
+    iam_endpoint               = optional(string, null)
+    sts_endpoint               = optional(string, null)
+    sts_region                 = optional(string, null)
+    allowed_sts_header_values  = optional(set(string), null)
+    iam_server_id_header_value = optional(string, null)
+    role_arn                   = optional(string, null)
+    identity_token_audience    = optional(string, null)
+    max_retries                = optional(number, null)
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "aws_auth_roles" {
+  description = "Map of AWS auth backend roles."
+  type = map(object({
+    role                            = string
+    backend                         = optional(string, "aws")
+    auth_type                       = optional(string, "iam")
+    bound_ami_ids                   = optional(set(string), null)
+    bound_account_ids               = optional(set(string), null)
+    bound_regions                   = optional(set(string), null)
+    bound_vpc_ids                   = optional(set(string), null)
+    bound_subnet_ids                = optional(set(string), null)
+    bound_iam_role_arns             = optional(set(string), null)
+    bound_iam_instance_profile_arns = optional(set(string), null)
+    bound_ec2_instance_ids          = optional(set(string), null)
+    role_tag                        = optional(string, null)
+    bound_iam_principal_arns        = optional(set(string), null)
+    inferred_entity_type            = optional(string, null)
+    inferred_aws_region             = optional(string, null)
+    resolve_aws_unique_ids          = optional(bool, true)
+    allow_instance_migration        = optional(bool, false)
+    disallow_reauthentication       = optional(bool, false)
+    token_ttl                       = optional(number, null)
+    token_max_ttl                   = optional(number, null)
+    token_period                    = optional(number, null)
+    token_policies                  = optional(set(string), null)
+    token_bound_cidrs               = optional(set(string), null)
+    token_explicit_max_ttl          = optional(number, null)
+    token_no_default_policy         = optional(bool, null)
+    token_num_uses                  = optional(number, null)
+    token_type                      = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "azure_auth_backends" {
+  description = "Map of Azure auth backends config."
+  type = map(object({
+    path          = string
+    description   = optional(string, null)
+    namespace     = optional(string, null)
+    tenant_id     = string
+    client_id     = optional(string, null)
+    client_secret = optional(string, null)
+    resource      = string
+    environment   = optional(string, "AzurePublicCloud")
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "azure_auth_roles" {
+  description = "Map of Azure auth roles."
+  type = map(object({
+    role                        = string
+    backend                     = optional(string, "azure")
+    bound_service_principal_ids = optional(list(string), null)
+    bound_group_ids             = optional(list(string), null)
+    bound_locations             = optional(list(string), null)
+    bound_subscription_ids      = optional(list(string), null)
+    bound_resource_groups       = optional(list(string), null)
+    bound_scale_sets            = optional(list(string), null)
+    token_ttl                   = optional(number, null)
+    token_max_ttl               = optional(number, null)
+    token_period                = optional(number, null)
+    token_policies              = optional(set(string), null)
+    token_bound_cidrs           = optional(set(string), null)
+    token_explicit_max_ttl      = optional(number, null)
+    token_no_default_policy     = optional(bool, null)
+    token_num_uses              = optional(number, null)
+    token_type                  = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "gcp_auth_backends" {
+  description = "Map of GCP auth backends."
+  type = map(object({
+    path                    = optional(string, "gcp")
+    description             = optional(string, null)
+    local                   = optional(bool, false)
+    credentials             = optional(string, null)
+    client_email            = optional(string, null)
+    project_id              = optional(string, null)
+    identity_token_audience = optional(string, null)
+    identity_token_ttl      = optional(number, null)
+    identity_token_key      = optional(string, null)
+    service_account_email   = optional(string, null)
+    iam_alias               = optional(string, null)
+    iam_metadata            = optional(set(string), null)
+    gce_alias               = optional(string, null)
+    gce_metadata            = optional(set(string), null)
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "gcp_auth_roles" {
+  description = "Map of GCP auth roles."
+  type = map(object({
+    role                    = string
+    backend                 = optional(string, "gcp")
+    type                    = string
+    bound_projects          = optional(set(string), null)
+    add_group_aliases       = optional(bool, null)
+    max_jwt_exp             = optional(string, null)
+    allow_gce_inference     = optional(bool, null)
+    bound_service_accounts  = optional(set(string), null)
+    bound_zones             = optional(set(string), null)
+    bound_regions           = optional(set(string), null)
+    bound_instance_groups   = optional(set(string), null)
+    bound_labels            = optional(set(string), null)
+    token_ttl               = optional(number, null)
+    token_max_ttl           = optional(number, null)
+    token_period            = optional(number, null)
+    token_policies          = optional(set(string), null)
+    token_bound_cidrs       = optional(set(string), null)
+    token_explicit_max_ttl  = optional(number, null)
+    token_no_default_policy = optional(bool, null)
+    token_num_uses          = optional(number, null)
+    token_type              = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "ldap_auth_backends" {
+  description = "Map of LDAP auth backends."
+  type = map(object({
+    path                        = optional(string, "ldap")
+    description                 = optional(string, null)
+    local                       = optional(bool, false)
+    url                         = string
+    starttls                    = optional(bool, null)
+    tls_min_version             = optional(string, null)
+    tls_max_version             = optional(string, null)
+    insecure_tls                = optional(bool, null)
+    certificate                 = optional(string, null)
+    binddn                      = optional(string, null)
+    bindpass                    = optional(string, null)
+    case_sensitive_names        = optional(bool, null)
+    max_page_size               = optional(number, null)
+    userdn                      = optional(string, null)
+    userattr                    = optional(string, null)
+    userfilter                  = optional(string, null)
+    discoverdn                  = optional(bool, null)
+    deny_null_bind              = optional(bool, null)
+    upndomain                   = optional(string, null)
+    groupfilter                 = optional(string, null)
+    groupdn                     = optional(string, null)
+    groupattr                   = optional(string, null)
+    username_as_alias           = optional(bool, null)
+    use_token_groups            = optional(bool, null)
+    client_tls_cert             = optional(string, null)
+    client_tls_key              = optional(string, null)
+    connection_timeout          = optional(number, null)
+    request_timeout             = optional(number, null)
+    dereference_aliases         = optional(string, null)
+    enable_samaccountname_login = optional(bool, null)
+    anonymous_group_search      = optional(bool, null)
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "ldap_auth_groups" {
+  description = "Map of LDAP auth groups."
+  type = map(object({
+    groupname = string
+    backend   = optional(string, "ldap")
+    policies  = optional(set(string), null)
+  }))
+  default = {}
+}
+
+variable "okta_auth_backends" {
+  description = "Map of Okta auth backends."
+  type = map(object({
+    path            = optional(string, "okta")
+    description     = optional(string, null)
+    organization    = string
+    token           = optional(string, null)
+    base_url        = optional(string, null)
+    bypass_okta_mfa = optional(bool, null)
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "okta_auth_groups" {
+  description = "Map of Okta auth groups."
+  type = map(object({
+    group_name = string
+    path       = string
+    policies   = optional(set(string), null)
+  }))
+  default = {}
+}
+
+variable "okta_auth_users" {
+  description = "Map of Okta auth users."
+  type = map(object({
+    username = string
+    path     = string
+    groups   = optional(set(string), null)
+    policies = optional(set(string), null)
+  }))
+  default = {}
+}
+
+variable "cert_auth_backends" {
+  description = "Map of Cert auth backends."
+  type = map(object({
+    path        = string
+    description = optional(string, null)
+    namespace   = optional(string, null)
+    tune = optional(object({
+      default_lease_ttl            = optional(string, null)
+      max_lease_ttl                = optional(string, null)
+      listing_visibility           = optional(string, null)
+      audit_non_hmac_request_keys  = optional(list(string), null)
+      audit_non_hmac_response_keys = optional(list(string), null)
+      passthrough_request_headers  = optional(list(string), null)
+      allowed_response_headers     = optional(list(string), null)
+      token_type                   = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "cert_auth_roles" {
+  description = "Map of Cert auth roles."
+  type = map(object({
+    name                         = string
+    backend                      = optional(string, "cert")
+    certificate                  = string
+    allowed_names                = optional(set(string), null)
+    allowed_common_names         = optional(set(string), null)
+    allowed_dns_sans             = optional(set(string), null)
+    allowed_email_sans           = optional(set(string), null)
+    allowed_uri_sans             = optional(set(string), null)
+    allowed_organizational_units = optional(set(string), null)
+    required_extensions          = optional(set(string), null)
+    display_name                 = optional(string, null)
+    ocsp_ca_certificates         = optional(string, null)
+    ocsp_servers_override        = optional(set(string), null)
+    ocsp_enabled                 = optional(bool, null)
+    ocsp_fail_open               = optional(bool, null)
+    ocsp_query_all_servers       = optional(bool, null)
+    ocsp_max_retries             = optional(number, null)
+    ocsp_this_update_max_age     = optional(number, null)
+    token_ttl                    = optional(number, null)
+    token_max_ttl                = optional(number, null)
+    token_period                 = optional(number, null)
+    token_policies               = optional(set(string), null)
+    token_bound_cidrs            = optional(set(string), null)
+    token_explicit_max_ttl       = optional(number, null)
+    token_no_default_policy      = optional(bool, null)
+    token_num_uses               = optional(number, null)
+    token_type                   = optional(string, null)
+  }))
+  default = {}
+}
+
 # -- Phase 4 Improvements ----------------------------------------------------
 
 variable "ssh_roles" {
@@ -789,14 +1121,20 @@ variable "secrets_sync_config" {
 variable "secrets_sync_aws_destinations" {
   description = "A map of AWS destinations for secrets sync."
   type = map(object({
-    name                 = string
-    access_key_id        = optional(string)
-    secret_access_key    = optional(string)
-    region               = optional(string)
-    role_arn             = optional(string)
-    external_id          = optional(string)
-    secret_name_template = optional(string)
-    namespace            = optional(string)
+    name                      = string
+    access_key_id             = optional(string)
+    secret_access_key         = optional(string)
+    region                    = optional(string)
+    role_arn                  = optional(string)
+    external_id               = optional(string)
+    secret_name_template      = optional(string)
+    granularity               = optional(string)
+    custom_tags               = optional(map(string))
+    allowed_ipv4_addresses    = optional(list(string))
+    allowed_ipv6_addresses    = optional(list(string))
+    allowed_ports             = optional(list(number))
+    disable_strict_networking = optional(bool)
+    namespace                 = optional(string)
   }))
   default = {}
 }
@@ -804,13 +1142,20 @@ variable "secrets_sync_aws_destinations" {
 variable "secrets_sync_azure_destinations" {
   description = "A map of Azure destinations for secrets sync."
   type = map(object({
-    name                 = string
-    client_id            = optional(string)
-    client_secret        = optional(string)
-    tenant_id            = optional(string)
-    key_vault_uri        = optional(string)
-    secret_name_template = optional(string)
-    namespace            = optional(string)
+    name                      = string
+    client_id                 = optional(string)
+    client_secret             = optional(string)
+    tenant_id                 = optional(string)
+    key_vault_uri             = optional(string)
+    cloud                     = optional(string)
+    secret_name_template      = optional(string)
+    granularity               = optional(string)
+    custom_tags               = optional(map(string))
+    allowed_ipv4_addresses    = optional(list(string))
+    allowed_ipv6_addresses    = optional(list(string))
+    allowed_ports             = optional(list(number))
+    disable_strict_networking = optional(bool)
+    namespace                 = optional(string)
   }))
   default = {}
 }
@@ -818,11 +1163,20 @@ variable "secrets_sync_azure_destinations" {
 variable "secrets_sync_gcp_destinations" {
   description = "A map of GCP destinations for secrets sync."
   type = map(object({
-    name                 = string
-    credentials          = optional(string)
-    project_id           = optional(string)
-    secret_name_template = optional(string)
-    namespace            = optional(string)
+    name                      = string
+    credentials               = optional(string)
+    project_id                = optional(string)
+    secret_name_template      = optional(string)
+    granularity               = optional(string)
+    custom_tags               = optional(map(string))
+    replication_locations     = optional(list(string))
+    locational_kms_keys       = optional(map(string))
+    global_kms_key            = optional(string)
+    allowed_ipv4_addresses    = optional(list(string))
+    allowed_ipv6_addresses    = optional(list(string))
+    allowed_ports             = optional(list(number))
+    disable_strict_networking = optional(bool)
+    namespace                 = optional(string)
   }))
   default = {}
 }
@@ -830,12 +1184,21 @@ variable "secrets_sync_gcp_destinations" {
 variable "secrets_sync_gh_destinations" {
   description = "A map of GitHub destinations for secrets sync."
   type = map(object({
-    name                 = string
-    access_token         = optional(string)
-    repository_owner     = optional(string)
-    repository_name      = optional(string)
-    secret_name_template = optional(string)
-    namespace            = optional(string)
+    name                      = string
+    access_token              = optional(string)
+    repository_owner          = optional(string)
+    repository_name           = optional(string)
+    app_name                  = optional(string)
+    installation_id           = optional(number)
+    secret_name_template      = optional(string)
+    granularity               = optional(string)
+    secrets_location          = optional(string)
+    environment_name          = optional(string)
+    allowed_ipv4_addresses    = optional(list(string))
+    allowed_ipv6_addresses    = optional(list(string))
+    allowed_ports             = optional(list(number))
+    disable_strict_networking = optional(bool)
+    namespace                 = optional(string)
   }))
   default = {}
 }
@@ -862,6 +1225,7 @@ variable "quota_rate_limits" {
     name           = string
     path           = optional(string)
     rate           = number
+    secondary_rate = optional(number)
     interval       = optional(number)
     block_interval = optional(number)
     role           = optional(string)
