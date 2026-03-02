@@ -262,3 +262,69 @@ output "identity_group_aliases" {
     }
   }
 }
+
+###############################################################################
+# AppRole Auth Roles
+###############################################################################
+
+output "approle_auth_roles" {
+  description = "Map of AppRole auth role keys to their role names, role IDs, and backend paths."
+  value = {
+    for k, v in vault_approle_auth_backend_role.this : k => {
+      role_name = v.role_name
+      role_id   = v.role_id
+      backend   = v.backend
+    }
+  }
+}
+
+###############################################################################
+# JWT/OIDC Auth Roles
+###############################################################################
+
+output "jwt_oidc_auth_roles" {
+  description = "Map of JWT/OIDC auth role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_jwt_auth_backend_role.this : k => {
+      role_name = v.role_name
+      backend   = v.backend
+    }
+  }
+}
+
+###############################################################################
+# Transit Keys
+###############################################################################
+
+output "transit_keys" {
+  description = "Map of Transit key keys to their names and backend paths."
+  value = {
+    for k, v in vault_transit_secret_backend_key.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+###############################################################################
+# Password Policies
+###############################################################################
+
+output "password_policies" {
+  description = "Map of password policy keys to their names."
+  value       = { for k, v in vault_password_policy.this : k => v.name }
+}
+
+###############################################################################
+# Identity Group Memberships
+###############################################################################
+
+output "identity_group_memberships" {
+  description = "Map of identity group membership keys to their group IDs and member entity IDs."
+  value = {
+    for k, v in vault_identity_group_member_entity_ids.this : k => {
+      group_id          = v.group_id
+      member_entity_ids = v.member_entity_ids
+    }
+  }
+}
