@@ -574,3 +574,219 @@ resource "vault_cert_auth_backend_role" "this" {
   token_num_uses               = each.value.token_num_uses
   token_type                   = each.value.token_type
 }
+
+###############################################################################
+# SAML Auth Backend
+###############################################################################
+
+resource "vault_saml_auth_backend" "this" {
+  for_each = var.saml_auth_backends
+
+  path                         = each.value.path
+  idp_metadata_url             = each.value.idp_metadata_url
+  idp_sso_url                  = each.value.idp_sso_url
+  idp_entity_id                = each.value.idp_entity_id
+  idp_cert                     = each.value.idp_cert
+  entity_id                    = each.value.entity_id
+  acs_urls                     = each.value.acs_urls
+  default_role                 = each.value.default_role
+  verbose_logging              = each.value.verbose_logging
+  validate_assertion_signature = each.value.validate_assertion_signature
+  validate_response_signature  = each.value.validate_response_signature
+  disable_remount              = each.value.disable_remount
+  namespace                    = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "tune" {
+    for_each = each.value.tune != null ? [each.value.tune] : []
+    content {
+      default_lease_ttl            = tune.value.default_lease_ttl
+      max_lease_ttl                = tune.value.max_lease_ttl
+      listing_visibility           = tune.value.listing_visibility
+      audit_non_hmac_request_keys  = tune.value.audit_non_hmac_request_keys
+      audit_non_hmac_response_keys = tune.value.audit_non_hmac_response_keys
+      passthrough_request_headers  = tune.value.passthrough_request_headers
+      allowed_response_headers     = tune.value.allowed_response_headers
+      token_type                   = tune.value.token_type
+    }
+  }
+}
+
+resource "vault_saml_auth_backend_role" "this" {
+  for_each = var.saml_auth_roles
+
+  path                    = each.value.path
+  name                    = each.value.name
+  groups_attribute        = each.value.groups_attribute
+  bound_subjects          = each.value.bound_subjects
+  bound_subjects_type     = each.value.bound_subjects_type
+  bound_attributes        = each.value.bound_attributes
+  bound_attributes_type   = each.value.bound_attributes_type
+  token_ttl               = each.value.token_ttl
+  token_max_ttl           = each.value.token_max_ttl
+  token_period            = each.value.token_period
+  token_policies          = each.value.token_policies
+  token_bound_cidrs       = each.value.token_bound_cidrs
+  token_explicit_max_ttl  = each.value.token_explicit_max_ttl
+  token_no_default_policy = each.value.token_no_default_policy
+  token_num_uses          = each.value.token_num_uses
+  token_type              = each.value.token_type
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# SPIFFE Auth Backend
+###############################################################################
+
+resource "vault_auth_backend" "spiffe" {
+  for_each = var.spiffe_auth_backends
+
+  type        = "spiffe"
+  path        = each.value.path
+  description = each.value.description
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "tune" {
+    for_each = each.value.tune != null ? [each.value.tune] : []
+    content {
+      default_lease_ttl           = tune.value.default_lease_ttl
+      max_lease_ttl               = tune.value.max_lease_ttl
+      listing_visibility          = tune.value.listing_visibility
+      passthrough_request_headers = tune.value.passthrough_request_headers
+      allowed_response_headers    = tune.value.allowed_response_headers
+      token_type                  = tune.value.token_type
+    }
+  }
+}
+
+resource "vault_spiffe_auth_backend_config" "this" {
+  for_each = var.spiffe_auth_backends
+
+  mount                           = vault_auth_backend.spiffe[each.key].path
+  trust_domain                    = each.value.trust_domain
+  profile                         = each.value.profile
+  audience                        = each.value.audience
+  defer_bundle_fetch              = each.value.defer_bundle_fetch
+  bundle                          = each.value.bundle
+  endpoint_url                    = each.value.endpoint_url
+  endpoint_root_ca_truststore_pem = each.value.endpoint_root_ca_truststore_pem
+  endpoint_spiffe_id              = each.value.endpoint_spiffe_id
+  namespace                       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_spiffe_auth_backend_role" "this" {
+  for_each = var.spiffe_auth_roles
+
+  mount                   = each.value.mount
+  name                    = each.value.name
+  workload_id_patterns    = each.value.workload_id_patterns
+  display_name            = each.value.display_name
+  alias_metadata          = each.value.alias_metadata
+  token_ttl               = each.value.token_ttl
+  token_max_ttl           = each.value.token_max_ttl
+  token_period            = each.value.token_period
+  token_policies          = each.value.token_policies
+  token_bound_cidrs       = each.value.token_bound_cidrs
+  token_explicit_max_ttl  = each.value.token_explicit_max_ttl
+  token_no_default_policy = each.value.token_no_default_policy
+  token_num_uses          = each.value.token_num_uses
+  token_type              = each.value.token_type
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# OCI Auth Backend
+###############################################################################
+
+resource "vault_auth_backend" "oci" {
+  for_each = var.oci_auth_backends
+
+  type        = "oci"
+  path        = each.value.path
+  description = each.value.description
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "tune" {
+    for_each = each.value.tune != null ? [each.value.tune] : []
+    content {
+      default_lease_ttl            = tune.value.default_lease_ttl
+      max_lease_ttl                = tune.value.max_lease_ttl
+      listing_visibility           = tune.value.listing_visibility
+      audit_non_hmac_request_keys  = tune.value.audit_non_hmac_request_keys
+      audit_non_hmac_response_keys = tune.value.audit_non_hmac_response_keys
+      passthrough_request_headers  = tune.value.passthrough_request_headers
+      allowed_response_headers     = tune.value.allowed_response_headers
+      token_type                   = tune.value.token_type
+    }
+  }
+}
+
+resource "vault_oci_auth_backend" "this" {
+  for_each = var.oci_auth_backends
+
+  path            = vault_auth_backend.oci[each.key].path
+  home_tenancy_id = each.value.home_tenancy_id
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_oci_auth_backend_role" "this" {
+  for_each = var.oci_auth_roles
+
+  name                    = each.value.name
+  backend                 = each.value.backend
+  ocid_list               = each.value.ocid_list
+  token_ttl               = each.value.token_ttl
+  token_max_ttl           = each.value.token_max_ttl
+  token_period            = each.value.token_period
+  token_policies          = each.value.token_policies
+  token_bound_cidrs       = each.value.token_bound_cidrs
+  token_explicit_max_ttl  = each.value.token_explicit_max_ttl
+  token_no_default_policy = each.value.token_no_default_policy
+  token_num_uses          = each.value.token_num_uses
+  token_type              = each.value.token_type
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# AliCloud Auth Backend
+###############################################################################
+
+resource "vault_auth_backend" "alicloud" {
+  for_each = var.alicloud_auth_backends
+
+  type        = "alicloud"
+  path        = each.value.path
+  description = each.value.description
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "tune" {
+    for_each = each.value.tune != null ? [each.value.tune] : []
+    content {
+      default_lease_ttl            = tune.value.default_lease_ttl
+      max_lease_ttl                = tune.value.max_lease_ttl
+      listing_visibility           = tune.value.listing_visibility
+      audit_non_hmac_request_keys  = tune.value.audit_non_hmac_request_keys
+      audit_non_hmac_response_keys = tune.value.audit_non_hmac_response_keys
+      passthrough_request_headers  = tune.value.passthrough_request_headers
+      allowed_response_headers     = tune.value.allowed_response_headers
+      token_type                   = tune.value.token_type
+    }
+  }
+}
+
+resource "vault_alicloud_auth_backend_role" "this" {
+  for_each = var.alicloud_auth_roles
+
+  role                    = each.value.role
+  backend                 = each.value.backend
+  arn                     = each.value.arn
+  token_ttl               = each.value.token_ttl
+  token_max_ttl           = each.value.token_max_ttl
+  token_period            = each.value.token_period
+  token_policies          = each.value.token_policies
+  token_bound_cidrs       = each.value.token_bound_cidrs
+  token_explicit_max_ttl  = each.value.token_explicit_max_ttl
+  token_no_default_policy = each.value.token_no_default_policy
+  token_num_uses          = each.value.token_num_uses
+  token_type              = each.value.token_type
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}
