@@ -271,3 +271,116 @@ resource "vault_identity_group_alias" "this" {
   canonical_id   = each.value.canonical_id
   namespace      = each.value.namespace
 }
+
+###############################################################################
+# AppRole Auth Roles
+###############################################################################
+
+resource "vault_approle_auth_backend_role" "this" {
+  for_each = var.approle_auth_roles
+
+  role_name               = each.value.role_name
+  backend                 = each.value.backend
+  role_id                 = each.value.role_id
+  bind_secret_id          = each.value.bind_secret_id
+  secret_id_bound_cidrs   = each.value.secret_id_bound_cidrs
+  secret_id_num_uses      = each.value.secret_id_num_uses
+  secret_id_ttl           = each.value.secret_id_ttl
+  local_secret_ids        = each.value.local_secret_ids
+  token_ttl               = each.value.token_ttl
+  token_max_ttl           = each.value.token_max_ttl
+  token_period            = each.value.token_period
+  token_policies          = each.value.token_policies
+  token_bound_cidrs       = each.value.token_bound_cidrs
+  token_explicit_max_ttl  = each.value.token_explicit_max_ttl
+  token_no_default_policy = each.value.token_no_default_policy
+  token_num_uses          = each.value.token_num_uses
+  token_type              = each.value.token_type
+  namespace               = each.value.namespace
+}
+
+###############################################################################
+# JWT/OIDC Auth Roles
+###############################################################################
+
+resource "vault_jwt_auth_backend_role" "this" {
+  for_each = var.jwt_oidc_auth_roles
+
+  role_name                    = each.value.role_name
+  backend                      = each.value.backend
+  role_type                    = each.value.role_type
+  bound_audiences              = each.value.bound_audiences
+  user_claim                   = each.value.user_claim
+  user_claim_json_pointer      = each.value.user_claim_json_pointer
+  clock_skew_leeway            = each.value.clock_skew_leeway
+  expiration_leeway            = each.value.expiration_leeway
+  not_before_leeway            = each.value.not_before_leeway
+  allowed_redirect_uris        = each.value.allowed_redirect_uris
+  bound_subject                = each.value.bound_subject
+  oidc_scopes                  = each.value.oidc_scopes
+  bound_claims_type            = each.value.bound_claims_type
+  bound_claims                 = each.value.bound_claims
+  disable_bound_claims_parsing = each.value.disable_bound_claims_parsing
+  claim_mappings               = each.value.claim_mappings
+  groups_claim                 = each.value.groups_claim
+  verbose_oidc_logging         = each.value.verbose_oidc_logging
+  max_age                      = each.value.max_age
+  token_ttl                    = each.value.token_ttl
+  token_max_ttl                = each.value.token_max_ttl
+  token_period                 = each.value.token_period
+  token_policies               = each.value.token_policies
+  token_bound_cidrs            = each.value.token_bound_cidrs
+  token_explicit_max_ttl       = each.value.token_explicit_max_ttl
+  token_no_default_policy      = each.value.token_no_default_policy
+  token_num_uses               = each.value.token_num_uses
+  token_type                   = each.value.token_type
+  namespace                    = each.value.namespace
+}
+
+###############################################################################
+# Transit Keys
+###############################################################################
+
+resource "vault_transit_secret_backend_key" "this" {
+  for_each = var.transit_keys
+
+  name                   = each.value.name
+  backend                = each.value.backend
+  type                   = each.value.type
+  deletion_allowed       = each.value.deletion_allowed
+  derived                = each.value.derived
+  exportable             = each.value.exportable
+  allow_plaintext_backup = each.value.allow_plaintext_backup
+  auto_rotate_period     = each.value.auto_rotate_period
+  min_decryption_version = each.value.min_decryption_version
+  min_encryption_version = each.value.min_encryption_version
+  context                = each.value.context
+  key_size               = each.value.key_size
+  namespace              = each.value.namespace
+}
+
+###############################################################################
+# Password Policies
+###############################################################################
+
+resource "vault_password_policy" "this" {
+  for_each = var.password_policies
+
+  name           = each.value.name
+  policy         = each.value.policy
+  entropy_source = each.value.entropy_source
+  namespace      = each.value.namespace
+}
+
+###############################################################################
+# Identity Group Memberships
+###############################################################################
+
+resource "vault_identity_group_member_entity_ids" "this" {
+  for_each = var.identity_group_memberships
+
+  group_id          = each.value.group_id
+  member_entity_ids = each.value.member_entity_ids
+  exclusive         = each.value.exclusive
+  namespace         = each.value.namespace
+}

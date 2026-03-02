@@ -154,15 +154,76 @@ module "vault" {
   # -- Generic Endpoints -------------------------------------------------------
 
   generic_endpoints = {
-    transit_key = {
-      path = "transit/keys/app-key"
+    # Custom configuration example
+    sys_config = {
+      path = "sys/config/ui/custom-message"
       data_json = jsonencode({
-        type = "aes256-gcm96"
+        help_message = "Welcome to Vault!"
       })
-      disable_read   = false
-      disable_delete = true
     }
   }
+
+  # -- AppRole Auth Roles ----------------------------------------------------
+
+  approle_auth_roles = {
+    app_role = {
+      role_name      = "app-role"
+      token_policies = ["app_team"]
+      token_ttl      = 3600
+    }
+  }
+
+  # -- JWT/OIDC Auth Roles ---------------------------------------------------
+
+  jwt_oidc_auth_roles = {
+    oidc_role = {
+      role_name             = "oidc-role"
+      role_type             = "oidc"
+      bound_audiences       = ["vault-client-id"]
+      user_claim            = "sub"
+      token_policies        = ["readonly"]
+      allowed_redirect_uris = ["http://localhost:8200/ui/vault/auth/oidc/oidc/callback"]
+    }
+  }
+
+  # -- Transit Keys ----------------------------------------------------------
+
+  transit_keys = {
+    app_key = {
+      name             = "app-key-v2"
+      backend          = "transit"
+      type             = "aes256-gcm96"
+      deletion_allowed = true
+    }
+  }
+
+  # -- Password Policies -----------------------------------------------------
+
+  password_policies = {
+    complex = {
+      name   = "complex-policy"
+      policy = <<-EOT
+        length = 24
+        rule "charset" {
+          charset = "abcdefghijklmnopqrstuvwxyz"
+          min-chars = 1
+        }
+        rule "charset" {
+          charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+          min-chars = 1
+        }
+        rule "charset" {
+          charset = "0123456789"
+          min-chars = 1
+        }
+        rule "charset" {
+          charset = "!@#$%^&*()-_=+"
+          min-chars = 1
+        }
+      EOT
+    }
+  }
+
   # -- Identity Entities ------------------------------------------------------
 
   identity_entities = {
@@ -172,7 +233,7 @@ module "vault" {
       policies = ["readonly"]
     }
 
-    app_servive = {
+    app_service = {
       name     = "app-service"
       metadata = { project = "billing" }
       policies = ["app_team"]
@@ -244,4 +305,20 @@ output "identity_entity_aliases" {
 
 output "identity_group_aliases" {
   value = module.vault.identity_group_aliases
+}
+
+output "approle_auth_roles" {
+  value = module.vault.approle_auth_roles
+}
+
+output "jwt_oidc_auth_roles" {
+  value = module.vault.jwt_oidc_auth_roles
+}
+
+output "transit_keys" {
+  value = module.vault.transit_keys
+}
+
+output "password_policies" {
+  value = module.vault.password_policies
 }

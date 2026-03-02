@@ -264,3 +264,126 @@ variable "identity_group_aliases" {
   }))
   default = {}
 }
+
+###############################################################################
+# AppRole Auth Roles
+###############################################################################
+
+variable "approle_auth_roles" {
+  description = "Map of AppRole auth backend roles to create."
+  type = map(object({
+    role_name               = string
+    backend                 = optional(string, "approle")
+    role_id                 = optional(string, null)
+    bind_secret_id          = optional(bool, true)
+    secret_id_bound_cidrs   = optional(set(string), null)
+    secret_id_num_uses      = optional(number, null)
+    secret_id_ttl           = optional(number, null)
+    local_secret_ids        = optional(bool, false)
+    token_ttl               = optional(number, null)
+    token_max_ttl           = optional(number, null)
+    token_period            = optional(number, null)
+    token_policies          = optional(list(string), null)
+    token_bound_cidrs       = optional(list(string), null)
+    token_explicit_max_ttl  = optional(number, null)
+    token_no_default_policy = optional(bool, null)
+    token_num_uses          = optional(number, null)
+    token_type              = optional(string, null)
+    namespace               = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# JWT/OIDC Auth Roles
+###############################################################################
+
+variable "jwt_oidc_auth_roles" {
+  description = "Map of JWT/OIDC auth backend roles to create."
+  type = map(object({
+    role_name                    = string
+    backend                      = optional(string, "jwt")
+    role_type                    = optional(string, "oidc")
+    bound_audiences              = optional(set(string), null)
+    user_claim                   = string
+    user_claim_json_pointer      = optional(bool, false)
+    clock_skew_leeway            = optional(number, 0)
+    expiration_leeway            = optional(number, 0)
+    not_before_leeway            = optional(number, 0)
+    allowed_redirect_uris        = optional(set(string), null)
+    bound_subject                = optional(string, null)
+    oidc_scopes                  = optional(set(string), null)
+    bound_claims_type            = optional(string, null)
+    bound_claims                 = optional(map(string), null)
+    disable_bound_claims_parsing = optional(bool, false)
+    claim_mappings               = optional(map(string), null)
+    groups_claim                 = optional(string, null)
+    verbose_oidc_logging         = optional(bool, false)
+    max_age                      = optional(number, null)
+    token_ttl                    = optional(number, null)
+    token_max_ttl                = optional(number, null)
+    token_period                 = optional(number, null)
+    token_policies               = optional(list(string), null)
+    token_bound_cidrs            = optional(list(string), null)
+    token_explicit_max_ttl       = optional(number, null)
+    token_no_default_policy      = optional(bool, null)
+    token_num_uses               = optional(number, null)
+    token_type                   = optional(string, null)
+    namespace                    = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Transit Keys
+###############################################################################
+
+variable "transit_keys" {
+  description = "Map of Transit secret backend keys to create."
+  type = map(object({
+    name                   = string
+    backend                = string
+    type                   = optional(string, "aes256-gcm96")
+    deletion_allowed       = optional(bool, false)
+    derived                = optional(bool, false)
+    exportable             = optional(bool, false)
+    allow_plaintext_backup = optional(bool, false)
+    auto_rotate_period     = optional(number, null)
+    min_decryption_version = optional(number, 1)
+    min_encryption_version = optional(number, 0)
+    context                = optional(string, null)
+    key_size               = optional(number, 0)
+    namespace              = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Password Policies
+###############################################################################
+
+variable "password_policies" {
+  description = "Map of Password Policies to create."
+  type = map(object({
+    name           = string
+    policy         = string
+    entropy_source = optional(string, null)
+    namespace      = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Identity Group Memberships
+###############################################################################
+
+variable "identity_group_memberships" {
+  description = "Map of identity group memberships to create (member_entity_ids)."
+  type = map(object({
+    group_id          = string
+    member_entity_ids = list(string)
+    exclusive         = optional(bool, true)
+    namespace         = optional(string, null)
+  }))
+  default = {}
+}
