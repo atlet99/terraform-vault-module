@@ -1840,3 +1840,44 @@ variable "alicloud_auth_roles" {
   default = {}
 }
 
+###############################################################################
+# Identity & Security Enforcements
+###############################################################################
+
+variable "identity_mfa_login_enforcements" {
+  description = "A map of MFA login enforcement configurations. Ties MFA methods to specific auth paths, entity IDs, or group IDs."
+  type = map(object({
+    name                  = string
+    mfa_method_ids        = list(string)
+    auth_method_accessors = optional(set(string))
+    auth_method_types     = optional(set(string))
+    identity_entity_ids   = optional(set(string))
+    identity_group_ids    = optional(set(string))
+    namespace             = optional(string)
+  }))
+  default = {}
+}
+
+variable "egp_policies" {
+  description = "A map of Sentinel Endpoint Governing Policy (EGP) configurations. Enforced on specific Vault API paths. Enterprise only."
+  type = map(object({
+    name              = string
+    paths             = list(string)
+    enforcement_level = string
+    policy            = string
+    namespace         = optional(string)
+  }))
+  default = {}
+}
+
+variable "rgp_policies" {
+  description = "A map of Sentinel Role Governing Policy (RGP) configurations. Enforced per token/role. Enterprise only."
+  type = map(object({
+    name              = string
+    enforcement_level = string
+    policy            = string
+    namespace         = optional(string)
+  }))
+  default = {}
+}
+

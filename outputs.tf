@@ -928,3 +928,38 @@ output "transform_transformations" {
     }
   }
 }
+
+###############################################################################
+# Identity & Security Enforcements
+###############################################################################
+
+output "identity_mfa_login_enforcements" {
+  description = "Map of MFA login enforcement keys to their names and namespace paths."
+  value = {
+    for k, v in vault_identity_mfa_login_enforcement.this : k => {
+      name           = v.name
+      namespace_id   = v.namespace_id
+      namespace_path = v.namespace_path
+    }
+  }
+}
+
+output "egp_policies" {
+  description = "Map of Sentinel EGP policy keys to their names and enforcement levels. Enterprise only."
+  value = {
+    for k, v in vault_egp_policy.this : k => {
+      name              = v.name
+      enforcement_level = v.enforcement_level
+    }
+  }
+}
+
+output "rgp_policies" {
+  description = "Map of Sentinel RGP policy keys to their names and enforcement levels. Enterprise only."
+  value = {
+    for k, v in vault_rgp_policy.this : k => {
+      name              = v.name
+      enforcement_level = v.enforcement_level
+    }
+  }
+}
