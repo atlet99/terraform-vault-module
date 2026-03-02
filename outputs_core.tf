@@ -89,6 +89,16 @@ output "audit_device_paths" {
   value       = { for k, v in vault_audit.this : k => v.path }
 }
 
+output "audit_request_headers" {
+  description = "Map of audit request header keys to their names and IDs."
+  value = {
+    for k, v in vault_audit_request_header.this : k => {
+      name = v.name
+      id   = v.id
+    }
+  }
+}
+
 ###############################################################################
 # KV-V2 Secrets
 ###############################################################################
@@ -112,6 +122,11 @@ output "kv_secret_v2_paths" {
 output "kv_secret_v2_metadata" {
   description = "Map of KV-V2 secret keys to their metadata."
   value       = { for k, v in vault_kv_secret_v2.this : k => v.metadata }
+}
+
+output "kv_secret_backend_v2_config" {
+  description = "Map of KV-V2 secret backend config keys to their mount paths."
+  value       = { for k, v in vault_kv_secret_backend_v2.this : k => v.mount }
 }
 
 ###############################################################################
@@ -153,16 +168,19 @@ output "generic_endpoints" {
       write_data_json = v.write_data_json
     }
   }
+  sensitive = true
 }
 
 output "generic_endpoint_write_data" {
   description = "Map of generic endpoint keys to their write_data maps."
   value       = { for k, v in vault_generic_endpoint.this : k => v.write_data }
+  sensitive   = true
 }
 
 output "generic_endpoint_write_data_json" {
   description = "Map of generic endpoint keys to their write_data_json strings."
   value       = { for k, v in vault_generic_endpoint.this : k => v.write_data_json }
+  sensitive   = true
 }
 
 ###############################################################################
@@ -172,4 +190,18 @@ output "generic_endpoint_write_data_json" {
 output "password_policies" {
   description = "Map of password policy keys to their names."
   value       = { for k, v in vault_password_policy.this : k => v.name }
+}
+
+###############################################################################
+# Raft Storage Management
+###############################################################################
+
+output "raft_autopilot" {
+  description = "Raft autopilot configuration ID."
+  value       = var.raft_autopilot != null ? vault_raft_autopilot.this[0].id : null
+}
+
+output "raft_snapshot_agent_configs" {
+  description = "Map of Raft snapshot agent configuration keys to their IDs."
+  value       = { for k, v in vault_raft_snapshot_agent_config.this : k => v.id }
 }

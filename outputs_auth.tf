@@ -23,6 +23,11 @@ output "kubernetes_auth_backend_paths" {
   value       = { for k, v in vault_auth_backend.kubernetes : k => v.path }
 }
 
+output "kubernetes_auth_backend_configs" {
+  description = "Map of Kubernetes auth backend config keys to their backend paths."
+  value       = { for k, v in vault_kubernetes_auth_backend_config.this : k => v.backend }
+}
+
 output "kubernetes_auth_roles" {
   description = "Map of Kubernetes auth role composite keys (backend/role) to their role names and backend paths."
   value = {
@@ -90,6 +95,11 @@ output "aws_auth_roles" {
   }
 }
 
+output "aws_auth_backends" {
+  description = "Map of AWS auth backend client keys to their backend paths."
+  value       = { for k, v in vault_aws_auth_backend_client.this : k => v.backend }
+}
+
 ###############################################################################
 # Azure Auth
 ###############################################################################
@@ -97,6 +107,11 @@ output "aws_auth_roles" {
 output "azure_auth_backends" {
   description = "Map of Azure auth backend keys to their paths."
   value       = { for k, v in vault_auth_backend.azure : k => v.path }
+}
+
+output "azure_auth_backend_configs" {
+  description = "Map of Azure auth backend config keys to their backend paths."
+  value       = { for k, v in vault_azure_auth_backend_config.this : k => v.backend }
 }
 
 output "azure_auth_roles" {
@@ -230,6 +245,11 @@ output "saml_auth_roles" {
 output "spiffe_auth_backends" {
   description = "Map of SPIFFE auth backend keys to their paths."
   value       = { for k, v in vault_auth_backend.spiffe : k => v.path }
+}
+
+output "spiffe_auth_backend_configs" {
+  description = "Map of SPIFFE auth backend config keys to their mount paths."
+  value       = { for k, v in vault_spiffe_auth_backend_config.this : k => v.mount }
 }
 
 output "spiffe_auth_roles" {

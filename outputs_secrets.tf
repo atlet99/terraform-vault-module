@@ -112,6 +112,16 @@ output "azure_secret_backends" {
   value       = { for k, v in vault_azure_secret_backend.this : k => v.path }
 }
 
+output "azure_secret_backend_roles" {
+  description = "Map of Azure secret backend role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_azure_secret_backend_role.this : k => {
+      role    = v.role
+      backend = v.backend
+    }
+  }
+}
+
 ###############################################################################
 # GCP Secret Backend
 ###############################################################################
@@ -121,7 +131,7 @@ output "gcp_secret_backends" {
   value       = { for k, v in vault_gcp_secret_backend.this : k => v.path }
 }
 
-output "gcp_secret_rolesets" {
+output "gcp_secret_backend_rolesets" {
   description = "Map of GCP secret roleset keys to their rolesets and backend paths."
   value = {
     for k, v in vault_gcp_secret_roleset.this : k => {
@@ -131,7 +141,7 @@ output "gcp_secret_rolesets" {
   }
 }
 
-output "gcp_secret_static_accounts" {
+output "gcp_secret_backend_static_accounts" {
   description = "Map of GCP secret static account keys to their static accounts and backend paths."
   value = {
     for k, v in vault_gcp_secret_static_account.this : k => {
@@ -316,4 +326,13 @@ output "transform_transformations" {
       path = v.path
     }
   }
+}
+
+###############################################################################
+# Managed Keys
+###############################################################################
+
+output "managed_keys" {
+  description = "The ID of the Managed Keys resource."
+  value       = var.managed_keys != null ? vault_managed_keys.this[0].id : null
 }

@@ -113,6 +113,28 @@ variable "pki_roles" {
   default = {}
 }
 
+variable "pki_config_urls" {
+  description = "Map of PKI secret backend URL configurations."
+  type = map(object({
+    backend                 = string
+    issuing_certificates    = optional(list(string), null)
+    crl_distribution_points = optional(list(string), null)
+    ocsp_servers            = optional(list(string), null)
+    namespace               = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "pki_config_cas" {
+  description = "Map of PKI secret backend CA configurations (import existing CA)."
+  type = map(object({
+    backend    = string
+    pem_bundle = string
+    namespace  = optional(string, null)
+  }))
+  default = {}
+}
+
 variable "pki_secret_backend_config_acmes" {
   description = "A map of PKI ACME configurations."
   type = map(object({
@@ -627,4 +649,64 @@ variable "transform_roles" {
     namespace       = optional(string)
   }))
   default = {}
+}
+
+###############################################################################
+# Managed Keys (Vault Enterprise)
+###############################################################################
+
+variable "managed_keys" {
+  description = "A single configuration object for all Managed Keys. Note: Vault supports only one Managed Keys resource per namespace/state."
+  type = object({
+    namespace = optional(string)
+    aws = optional(list(object({
+      name               = string
+      access_key         = string
+      secret_key         = string
+      key_bits           = string
+      key_type           = string
+      kms_key            = string
+      curve              = optional(string)
+      endpoint           = optional(string)
+      region             = optional(string)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+    azure = optional(list(object({
+      name               = string
+      tenant_id          = string
+      client_id          = string
+      client_secret      = string
+      vault_name         = string
+      key_name           = string
+      key_type           = string
+      environment        = optional(string)
+      resource           = optional(string)
+      key_bits           = optional(number)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+    pkcs = optional(list(object({
+      name               = string
+      library            = string
+      key_label          = string
+      key_id             = string
+      mechanism          = string
+      pin                = string
+      slot               = optional(string)
+      token_label        = optional(string)
+      curve              = optional(string)
+      key_bits           = optional(number)
+      force_rw_session   = optional(bool)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+  })
+  default = null
 }

@@ -27,6 +27,11 @@ output "secrets_sync_gh_destinations" {
   value       = { for k, v in vault_secrets_sync_gh_destination.this : k => v.name }
 }
 
+output "secrets_sync_vercel_destinations" {
+  description = "Map of Secrets Sync Vercel destination keys to their names."
+  value       = { for k, v in vault_secrets_sync_vercel_destination.this : k => v.name }
+}
+
 output "secrets_sync_associations" {
   description = "Map of Secrets Sync association keys to their mount paths and secret names."
   value = {
