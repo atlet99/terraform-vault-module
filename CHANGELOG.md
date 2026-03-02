@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [FEATURE] - ssh secret backend roles, token auth backend roles, audit request headers, Identity OIDC & MFA; (#5)
 - [FEATURE] - add Azure, GCP, LDAP, PKI ACME secret backends and secrets sync resources;
 - [FEATURE] - add AWS, Azure, and GCP authentication backends and their configurations;
+- [FEATURE] - add support for Consul, Nomad, MongoDB Atlas, RabbitMQ, Terraform Cloud, KMIP, and Transform secret engines;
+
+### Changed
+
+- [DOCS] - add registry screen for README;
 
 ### Fixed
 
