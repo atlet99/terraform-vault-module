@@ -20,11 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align changelog with git-cliff
 - Release v1.0.1
 - Regenerate changelog with git-cliff
+- Release v1.0.0
 
 ### Fixed
 
 - [FIX] - release mechanism;
 - [FIX] - changelog scripts;
+- [FIX] - release tag name;
 
 [1.0.0]: https://github.com/atlet99/terraform-vault-module/tree/v1.0.0
 
