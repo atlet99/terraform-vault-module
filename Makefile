@@ -1,4 +1,6 @@
-.PHONY: fmt validate docs lint changelog release tag clean help check-deps check-all
+.PHONY: fmt validate docs lint changelog release tag clean help check-deps check-all \
+       changelog-added changelog-changed changelog-deprecated \
+       changelog-removed changelog-fixed changelog-security changelog-generate
 
 SHELL := /bin/bash
 
@@ -63,13 +65,42 @@ check-all: fmt validate lint docs ## Run all checks: fmt, validate, lint, docs
 # Changelog & Release
 ###############################################################################
 
-changelog: ## Add an [Unreleased] section to CHANGELOG.md if missing
+changelog: ## Ensure [Unreleased] section exists in CHANGELOG.md
 	@if ! grep -q '## \[Unreleased\]' CHANGELOG.md; then \
 		sed -i '' '/^# Changelog/a\'$$'\n''## [Unreleased]'$$'\n' CHANGELOG.md; \
 		echo "Added [Unreleased] section to CHANGELOG.md"; \
 	else \
 		echo "[Unreleased] section already exists"; \
 	fi
+
+# Internal helper: delegates to scripts/changelog-entry.sh
+_changelog-entry:
+	@if [ -z "$(MSG)" ]; then \
+		echo "ERROR: MSG is required. Usage: make changelog-added MSG=\"your message\""; \
+		exit 1; \
+	fi
+	@./scripts/changelog-entry.sh "$(SECTION)" "$(MSG)"
+
+changelog-added: ## Add entry: make changelog-added MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Added" MSG="$(MSG)"
+
+changelog-changed: ## Add entry: make changelog-changed MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Changed" MSG="$(MSG)"
+
+changelog-deprecated: ## Add entry: make changelog-deprecated MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Deprecated" MSG="$(MSG)"
+
+changelog-removed: ## Add entry: make changelog-removed MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Removed" MSG="$(MSG)"
+
+changelog-fixed: ## Add entry: make changelog-fixed MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Fixed" MSG="$(MSG)"
+
+changelog-security: ## Add entry: make changelog-security MSG="..."
+	@$(MAKE) _changelog-entry SECTION="Security" MSG="$(MSG)"
+
+changelog-generate: ## Auto-generate entries from git commits since last tag
+	@./scripts/changelog-generate.sh
 
 release: check-deps ## Create a release: make release VERSION=x.y.z
 	@if [ -z "$(VERSION)" ]; then \
