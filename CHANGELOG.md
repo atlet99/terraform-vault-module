@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [FEATURE] - adding support for dynamic credentials, certificate management, and enhanced authentication configuration; (#3)
 - [FEATURE] - ssh secret backend roles, token auth backend roles, audit request headers, Identity OIDC & MFA; (#5)
 - [FEATURE] - add Azure, GCP, LDAP, PKI ACME secret backends and secrets sync resources;
+- [FEATURE] - add AWS, Azure, and GCP authentication backends and their configurations;
 
 ### Fixed
 
