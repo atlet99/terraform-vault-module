@@ -11,13 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [FEATURE] - add support for Vault identity entity and group aliases, … (#1)
 - [FEATURE] - implement common auth methods and secret engines; (#2)
-- [FEATURE] - add database, PKI, AWS, and GitHub backend configurations;
 - [FEATURE] - adding support for dynamic credentials, certificate management, and enhanced authentication configuration; (#3)
+- [FEATURE] - add support for SSH, Token, Audit, Identity OIDC, and MFA resources;
+- [FEATURE] - implement Vault authentication backends, identity, policies, secrets engines, and audit devices;
 
 ### Fixed
 
-- [FIX] - terraform requirements;
-- [FIX] - resolve merge conflicts with main
+- [FIX] - conflicts; (#4)
 
 ## [1.0.1] - 2026-03-02
 
