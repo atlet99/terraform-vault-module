@@ -1,6 +1,4 @@
-.PHONY: fmt validate docs lint changelog release tag clean help check-deps check-all \
-       changelog-added changelog-changed changelog-deprecated \
-       changelog-removed changelog-fixed changelog-security changelog-generate
+.PHONY: fmt validate docs lint changelog release tag clean help check-deps check-all
 
 SHELL := /bin/bash
 
@@ -12,7 +10,7 @@ DATE := $(shell date +%Y-%m-%d)
 REPO_URL := https://github.com/atlet99/terraform-vault-module
 
 # Required binaries
-REQUIRED_BINS := terraform tflint terraform-docs git
+REQUIRED_BINS := terraform tflint terraform-docs git git-cliff
 
 ###############################################################################
 # Helpers
@@ -65,78 +63,40 @@ check-all: fmt validate lint docs ## Run all checks: fmt, validate, lint, docs
 # Changelog & Release
 ###############################################################################
 
-changelog: ## Ensure [Unreleased] section exists in CHANGELOG.md
-	@if ! grep -q '## \[Unreleased\]' CHANGELOG.md; then \
-		sed -i '' '/^# Changelog/a\'$$'\n''## [Unreleased]'$$'\n' CHANGELOG.md; \
-		echo "Added [Unreleased] section to CHANGELOG.md"; \
-	else \
-		echo "[Unreleased] section already exists"; \
-	fi
+changelog: check-deps ## Generate CHANGELOG.md from git commits
+	@echo "Generating CHANGELOG.md with git-cliff..."
+	@git cliff -o CHANGELOG.md
+	@echo "Done. Review CHANGELOG.md and commit."
 
-# Internal helper: delegates to scripts/changelog-entry.sh
-_changelog-entry:
-	@if [ -z "$(MSG)" ]; then \
-		echo "ERROR: MSG is required. Usage: make changelog-added MSG=\"your message\""; \
-		exit 1; \
-	fi
-	@./scripts/changelog-entry.sh "$(SECTION)" "$(MSG)"
+# Next version automatically determined by git-cliff
+NEXT_VERSION := $(shell git cliff --bumped-version 2>/dev/null || echo "v1.0.1")
 
-changelog-added: ## Add entry: make changelog-added MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Added" MSG="$(MSG)"
+changelog-preview: check-deps ## Preview the next version and unreleased changes
+	@echo "Next version: $(NEXT_VERSION)"
+	@echo "Unreleased changes:"
+	@git cliff --unreleased --strip all
 
-changelog-changed: ## Add entry: make changelog-changed MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Changed" MSG="$(MSG)"
-
-changelog-deprecated: ## Add entry: make changelog-deprecated MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Deprecated" MSG="$(MSG)"
-
-changelog-removed: ## Add entry: make changelog-removed MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Removed" MSG="$(MSG)"
-
-changelog-fixed: ## Add entry: make changelog-fixed MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Fixed" MSG="$(MSG)"
-
-changelog-security: ## Add entry: make changelog-security MSG="..."
-	@$(MAKE) _changelog-entry SECTION="Security" MSG="$(MSG)"
-
-changelog-generate: ## Auto-generate entries from git commits since last tag
-	@./scripts/changelog-generate.sh
-
-release: check-deps ## Create a release: make release VERSION=x.y.z
+release: check-deps ## Create a release: make release [VERSION=x.y.z]
 	@version="$(VERSION)"; \
 	if [ -z "$$version" ]; then \
-		read -rp "Enter release version (current: v$(CURRENT_VERSION)): " version; \
-		version=$${version#v}; \
-		if [ -z "$$version" ]; then echo "ERROR: VERSION cannot be empty."; exit 1; fi; \
+		version="$(NEXT_VERSION)"; \
 	fi; \
+	version=$${version#v}; \
 	echo "Releasing v$$version (current: v$(CURRENT_VERSION))..."; \
-	sed -i '' "s/## \[Unreleased\]/## [Unreleased]\\n\\n## [$$version] - $(DATE)/" CHANGELOG.md; \
-	sed -i '' "s|\[Unreleased\]: $(REPO_URL)/compare/v.*\.\.\.HEAD|[Unreleased]: $(REPO_URL)/compare/v$$version...HEAD|" CHANGELOG.md; \
-	if grep -q "\[$(CURRENT_VERSION)\]:" CHANGELOG.md; then \
-		sed -i '' "/\[$(CURRENT_VERSION)\]:/i\\"$$'\n'"[$$version]: $(REPO_URL)/compare/v$(CURRENT_VERSION)...v$$version" CHANGELOG.md; \
-	else \
-		echo "[$$version]: $(REPO_URL)/releases/tag/v$$version" >> CHANGELOG.md; \
-	fi; \
+	git cliff --bump --tag "v$$version" -o CHANGELOG.md; \
 	git add CHANGELOG.md; \
 	git commit -m "chore: release v$$version"; \
 	git tag -a "v$$version" -m "Release v$$version"; \
 	echo "Done. Run 'git push && git push --tags' to publish."
 
-tag: check-deps ## Create a tag with CHANGELOG update: make tag VERSION=x.y.z
+tag: check-deps ## Create a tag with CHANGELOG update: make tag [VERSION=x.y.z]
 	@version="$(VERSION)"; \
 	if [ -z "$$version" ]; then \
-		read -rp "Enter tag version (current: v$(CURRENT_VERSION)): " version; \
-		version=$${version#v}; \
-		if [ -z "$$version" ]; then echo "ERROR: VERSION cannot be empty."; exit 1; fi; \
+		version="$(NEXT_VERSION)"; \
 	fi; \
+	version=$${version#v}; \
 	echo "Creating tag v$$version (current: v$(CURRENT_VERSION))..."; \
-	sed -i '' "s/## \[Unreleased\]/## [Unreleased]\\n\\n## [$$version] - $(DATE)/" CHANGELOG.md; \
-	sed -i '' "s|\[Unreleased\]: $(REPO_URL)/compare/v.*\.\.\.HEAD|[Unreleased]: $(REPO_URL)/compare/v$$version...HEAD|" CHANGELOG.md; \
-	if grep -q "\[$(CURRENT_VERSION)\]:" CHANGELOG.md; then \
-		sed -i '' "/\[$(CURRENT_VERSION)\]:/i\\"$$'\n'"[$$version]: $(REPO_URL)/compare/v$(CURRENT_VERSION)...v$$version" CHANGELOG.md; \
-	else \
-		echo "[$$version]: $(REPO_URL)/releases/tag/v$$version" >> CHANGELOG.md; \
-	fi; \
+	git cliff --bump --tag "v$$version" -o CHANGELOG.md; \
 	git add CHANGELOG.md; \
 	git commit -m "chore: release v$$version"; \
 	git tag -a "v$$version" -m "Release v$$version"; \
