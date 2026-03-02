@@ -103,33 +103,44 @@ changelog-generate: ## Auto-generate entries from git commits since last tag
 	@./scripts/changelog-generate.sh
 
 release: check-deps ## Create a release: make release VERSION=x.y.z
-	@if [ -z "$(VERSION)" ]; then \
-		echo "ERROR: VERSION is required. Usage: make release VERSION=x.y.z"; \
-		exit 1; \
-	fi
-	@echo "Releasing v$(VERSION) (current: v$(CURRENT_VERSION))..."
-	@# Replace [Unreleased] heading with new version, add fresh Unreleased
-	@sed -i '' 's/## \[Unreleased\]/## [Unreleased]\n\n## [$(VERSION)] - $(DATE)/' CHANGELOG.md
-	@# Update the Unreleased comparison link
-	@sed -i '' 's|\[Unreleased\]: $(REPO_URL)/compare/v.*\.\.\.HEAD|[Unreleased]: $(REPO_URL)/compare/v$(VERSION)...HEAD|' CHANGELOG.md
-	@# Insert version comparison link
-	@if grep -q '\[$(CURRENT_VERSION)\]:' CHANGELOG.md; then \
-		sed -i '' '/\[$(CURRENT_VERSION)\]:/i\'$$'\n''[$(VERSION)]: $(REPO_URL)/compare/v$(CURRENT_VERSION)...v$(VERSION)' CHANGELOG.md; \
+	@version="$(VERSION)"; \
+	if [ -z "$$version" ]; then \
+		read -rp "Enter release version (current: v$(CURRENT_VERSION)): " version; \
+		version=$${version#v}; \
+		if [ -z "$$version" ]; then echo "ERROR: VERSION cannot be empty."; exit 1; fi; \
+	fi; \
+	echo "Releasing v$$version (current: v$(CURRENT_VERSION))..."; \
+	sed -i '' "s/## \[Unreleased\]/## [Unreleased]\\n\\n## [$$version] - $(DATE)/" CHANGELOG.md; \
+	sed -i '' "s|\[Unreleased\]: $(REPO_URL)/compare/v.*\.\.\.HEAD|[Unreleased]: $(REPO_URL)/compare/v$$version...HEAD|" CHANGELOG.md; \
+	if grep -q "\[$(CURRENT_VERSION)\]:" CHANGELOG.md; then \
+		sed -i '' "/\[$(CURRENT_VERSION)\]:/i\\"$$'\n'"[$$version]: $(REPO_URL)/compare/v$(CURRENT_VERSION)...v$$version" CHANGELOG.md; \
 	else \
-		echo "[$(VERSION)]: $(REPO_URL)/releases/tag/v$(VERSION)" >> CHANGELOG.md; \
-	fi
-	@git add CHANGELOG.md
-	@git commit -m "chore: release v$(VERSION)"
-	@git tag -a "v$(VERSION)" -m "Release v$(VERSION)"
-	@echo "Done. Run 'git push && git push --tags' to publish."
+		echo "[$$version]: $(REPO_URL)/releases/tag/v$$version" >> CHANGELOG.md; \
+	fi; \
+	git add CHANGELOG.md; \
+	git commit -m "chore: release v$$version"; \
+	git tag -a "v$$version" -m "Release v$$version"; \
+	echo "Done. Run 'git push && git push --tags' to publish."
 
-tag: check-deps ## Create a git tag: make tag VERSION=x.y.z
-	@if [ -z "$(VERSION)" ]; then \
-		echo "ERROR: VERSION is required. Usage: make tag VERSION=x.y.z"; \
-		exit 1; \
-	fi
-	git tag -a "v$(VERSION)" -m "Release v$(VERSION)"
-	@echo "Tag v$(VERSION) created. Run 'git push --tags' to publish."
+tag: check-deps ## Create a tag with CHANGELOG update: make tag VERSION=x.y.z
+	@version="$(VERSION)"; \
+	if [ -z "$$version" ]; then \
+		read -rp "Enter tag version (current: v$(CURRENT_VERSION)): " version; \
+		version=$${version#v}; \
+		if [ -z "$$version" ]; then echo "ERROR: VERSION cannot be empty."; exit 1; fi; \
+	fi; \
+	echo "Creating tag v$$version (current: v$(CURRENT_VERSION))..."; \
+	sed -i '' "s/## \[Unreleased\]/## [Unreleased]\\n\\n## [$$version] - $(DATE)/" CHANGELOG.md; \
+	sed -i '' "s|\[Unreleased\]: $(REPO_URL)/compare/v.*\.\.\.HEAD|[Unreleased]: $(REPO_URL)/compare/v$$version...HEAD|" CHANGELOG.md; \
+	if grep -q "\[$(CURRENT_VERSION)\]:" CHANGELOG.md; then \
+		sed -i '' "/\[$(CURRENT_VERSION)\]:/i\\"$$'\n'"[$$version]: $(REPO_URL)/compare/v$(CURRENT_VERSION)...v$$version" CHANGELOG.md; \
+	else \
+		echo "[$$version]: $(REPO_URL)/releases/tag/v$$version" >> CHANGELOG.md; \
+	fi; \
+	git add CHANGELOG.md; \
+	git commit -m "chore: release v$$version"; \
+	git tag -a "v$$version" -m "Release v$$version"; \
+	echo "Tag v$$version created. Run 'git push && git push --tags' to publish."
 
 ###############################################################################
 # Cleanup
