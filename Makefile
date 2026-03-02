@@ -10,7 +10,10 @@ DATE := $(shell date +%Y-%m-%d)
 REPO_URL := https://github.com/atlet99/terraform-vault-module
 
 # Required binaries
-REQUIRED_BINS := terraform tflint terraform-docs git git-cliff
+REQUIRED_BINS := terraform tflint terraform-docs git git-cliff tfenv
+
+# Use tfenv if available, otherwise fallback to standard terraform
+TERRAFORM := $(shell if command -v tfenv >/dev/null 2>&1; then echo "tfenv exec"; else echo "terraform"; fi)
 
 ###############################################################################
 # Helpers
@@ -40,11 +43,11 @@ check-deps: ## Check that all required tools are installed
 ###############################################################################
 
 fmt: check-deps ## Run terraform fmt recursively
-	terraform fmt -recursive
+	$(TERRAFORM) fmt -recursive
 
 validate: check-deps ## Run terraform init + validate
-	terraform init -backend=false -input=false
-	terraform validate
+	$(TERRAFORM) init -backend=false -input=false
+	$(TERRAFORM) validate
 
 ###############################################################################
 # Linting & Docs
