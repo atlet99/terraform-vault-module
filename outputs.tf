@@ -466,3 +466,23 @@ output "transform_alphabets" {
   description = "Map of Transform alphabet keys to their names."
   value       = { for k, v in vault_transform_alphabet.this : k => v.name }
 }
+
+output "saml_auth_backends" {
+  description = "Map of SAML auth backend keys to their paths."
+  value       = { for k, v in vault_saml_auth_backend.this : k => v.path }
+}
+
+output "spiffe_auth_backends" {
+  description = "Map of SPIFFE auth backend keys to their paths."
+  value       = { for k, v in vault_auth_backend.spiffe : k => v.path }
+}
+
+output "oci_auth_backends" {
+  description = "Map of OCI auth backend keys to their paths."
+  value       = { for k, v in vault_auth_backend.oci : k => v.path }
+}
+
+output "alicloud_auth_backends" {
+  description = "Map of AliCloud auth backend keys to their paths."
+  value       = { for k, v in vault_auth_backend.alicloud : k => v.path }
+}

@@ -1647,3 +1647,196 @@ variable "transform_roles" {
   }))
   default = {}
 }
+
+###############################################################################
+# Additional Auth Backends (SAML, SPIFFE, OCI, AliCloud)
+###############################################################################
+
+# SAML Auth Backend
+variable "saml_auth_backends" {
+  description = "A map of SAML auth backends to configure."
+  type = map(object({
+    path                         = optional(string, "saml")
+    description                  = optional(string)
+    idp_metadata_url             = optional(string)
+    idp_sso_url                  = optional(string)
+    idp_entity_id                = optional(string)
+    idp_cert                     = optional(string)
+    entity_id                    = optional(string)
+    acs_urls                     = optional(list(string))
+    default_role                 = optional(string)
+    verbose_logging              = optional(bool)
+    validate_assertion_signature = optional(bool)
+    validate_response_signature  = optional(bool)
+    disable_remount              = optional(bool)
+    namespace                    = optional(string)
+    tune = optional(object({
+      default_lease_ttl            = optional(string)
+      max_lease_ttl                = optional(string)
+      listing_visibility           = optional(string)
+      audit_non_hmac_request_keys  = optional(list(string))
+      audit_non_hmac_response_keys = optional(list(string))
+      passthrough_request_headers  = optional(list(string))
+      allowed_response_headers     = optional(list(string))
+      token_type                   = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "saml_auth_roles" {
+  description = "A map of SAML auth backend roles to configure."
+  type = map(object({
+    path                    = string
+    name                    = string
+    groups_attribute        = optional(string)
+    bound_subjects          = optional(list(string))
+    bound_subjects_type     = optional(string)
+    bound_attributes        = optional(map(string))
+    bound_attributes_type   = optional(string)
+    token_ttl               = optional(number)
+    token_max_ttl           = optional(number)
+    token_period            = optional(number)
+    token_policies          = optional(list(string))
+    token_bound_cidrs       = optional(list(string))
+    token_explicit_max_ttl  = optional(number)
+    token_no_default_policy = optional(bool)
+    token_num_uses          = optional(number)
+    token_type              = optional(string)
+    namespace               = optional(string)
+  }))
+  default = {}
+}
+
+# SPIFFE Auth Backend
+variable "spiffe_auth_backends" {
+  description = "A map of SPIFFE auth backends to configure."
+  type = map(object({
+    path                            = optional(string, "spiffe")
+    description                     = optional(string)
+    trust_domain                    = string
+    profile                         = string
+    audience                        = optional(list(string))
+    defer_bundle_fetch              = optional(bool)
+    bundle                          = optional(string)
+    endpoint_url                    = optional(string)
+    endpoint_root_ca_truststore_pem = optional(string)
+    endpoint_spiffe_id              = optional(string)
+    namespace                       = optional(string)
+    tune = optional(object({
+      default_lease_ttl           = optional(string)
+      max_lease_ttl               = optional(string)
+      listing_visibility          = optional(string)
+      passthrough_request_headers = optional(list(string))
+      allowed_response_headers    = optional(list(string))
+      token_type                  = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "spiffe_auth_roles" {
+  description = "A map of SPIFFE auth backend roles to configure."
+  type = map(object({
+    mount                   = string
+    name                    = string
+    workload_id_patterns    = list(string)
+    display_name            = optional(string)
+    alias_metadata          = optional(map(string))
+    token_ttl               = optional(number)
+    token_max_ttl           = optional(number)
+    token_period            = optional(number)
+    token_policies          = optional(list(string))
+    token_bound_cidrs       = optional(list(string))
+    token_explicit_max_ttl  = optional(number)
+    token_no_default_policy = optional(bool)
+    token_num_uses          = optional(number)
+    token_type              = optional(string)
+    namespace               = optional(string)
+  }))
+  default = {}
+}
+
+# OCI Auth Backend
+variable "oci_auth_backends" {
+  description = "A map of OCI (Oracle Cloud Infrastructure) auth backends to configure."
+  type = map(object({
+    path            = optional(string, "oci")
+    description     = optional(string)
+    home_tenancy_id = string
+    namespace       = optional(string)
+    tune = optional(object({
+      default_lease_ttl            = optional(string)
+      max_lease_ttl                = optional(string)
+      listing_visibility           = optional(string)
+      audit_non_hmac_request_keys  = optional(list(string))
+      audit_non_hmac_response_keys = optional(list(string))
+      passthrough_request_headers  = optional(list(string))
+      allowed_response_headers     = optional(list(string))
+      token_type                   = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "oci_auth_roles" {
+  description = "A map of OCI auth backend roles to configure."
+  type = map(object({
+    name                    = string
+    backend                 = string
+    ocid_list               = list(string)
+    token_ttl               = optional(number)
+    token_max_ttl           = optional(number)
+    token_period            = optional(number)
+    token_policies          = optional(list(string))
+    token_bound_cidrs       = optional(list(string))
+    token_explicit_max_ttl  = optional(number)
+    token_no_default_policy = optional(bool)
+    token_num_uses          = optional(number)
+    token_type              = optional(string)
+    namespace               = optional(string)
+  }))
+  default = {}
+}
+
+# AliCloud Auth Backend
+variable "alicloud_auth_backends" {
+  description = "A map of AliCloud auth backends to configure."
+  type = map(object({
+    path        = optional(string, "alicloud")
+    description = optional(string)
+    namespace   = optional(string)
+    tune = optional(object({
+      default_lease_ttl            = optional(string)
+      max_lease_ttl                = optional(string)
+      listing_visibility           = optional(string)
+      audit_non_hmac_request_keys  = optional(list(string))
+      audit_non_hmac_response_keys = optional(list(string))
+      passthrough_request_headers  = optional(list(string))
+      allowed_response_headers     = optional(list(string))
+      token_type                   = optional(string)
+    }))
+  }))
+  default = {}
+}
+
+variable "alicloud_auth_roles" {
+  description = "A map of AliCloud auth backend roles to configure."
+  type = map(object({
+    role                    = string
+    backend                 = optional(string, "alicloud")
+    arn                     = string
+    token_ttl               = optional(number)
+    token_max_ttl           = optional(number)
+    token_period            = optional(number)
+    token_policies          = optional(list(string))
+    token_bound_cidrs       = optional(list(string))
+    token_explicit_max_ttl  = optional(number)
+    token_no_default_policy = optional(bool)
+    token_num_uses          = optional(number)
+    token_type              = optional(string)
+    namespace               = optional(string)
+  }))
+  default = {}
+}
+
