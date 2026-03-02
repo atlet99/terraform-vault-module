@@ -75,14 +75,20 @@ output "pki_secret_backend_acme_eabs" {
   }
 }
 
-###############################################################################
-# AWS Secret Backend
-###############################################################################
-
 output "aws_roles" {
   description = "Map of AWS role keys to their names and backend paths."
   value = {
     for k, v in vault_aws_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "aws_static_roles" {
+  description = "Map of AWS static role keys to their names and backend paths."
+  value = {
+    for k, v in vault_aws_secret_backend_static_role.this : k => {
       name    = v.name
       backend = v.backend
     }
@@ -116,6 +122,16 @@ output "azure_secret_backend_roles" {
   description = "Map of Azure secret backend role keys to their role names and backend paths."
   value = {
     for k, v in vault_azure_secret_backend_role.this : k => {
+      role    = v.role
+      backend = v.backend
+    }
+  }
+}
+
+output "azure_static_roles" {
+  description = "Map of Azure static role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_azure_secret_backend_static_role.this : k => {
       role    = v.role
       backend = v.backend
     }
@@ -158,16 +174,6 @@ output "gcp_secret_backend_static_accounts" {
 output "ldap_secret_backends" {
   description = "Map of LDAP secret backend keys to their paths."
   value       = { for k, v in vault_ldap_secret_backend.this : k => v.path }
-}
-
-output "ldap_secret_backend_static_roles" {
-  description = "Map of LDAP secret static role keys to their role names and mount paths."
-  value = {
-    for k, v in vault_ldap_secret_backend_static_role.this : k => {
-      role_name = v.role_name
-      mount     = v.mount
-    }
-  }
 }
 
 output "ldap_secret_backend_library_sets" {
@@ -298,26 +304,6 @@ output "transform_alphabets" {
   value       = { for k, v in vault_transform_alphabet.this : k => v.name }
 }
 
-output "transform_roles" {
-  description = "Map of Transform role keys to their names and paths."
-  value = {
-    for k, v in vault_transform_role.this : k => {
-      name = v.name
-      path = v.path
-    }
-  }
-}
-
-output "transform_templates" {
-  description = "Map of Transform template keys to their names and paths."
-  value = {
-    for k, v in vault_transform_template.this : k => {
-      name = v.name
-      path = v.path
-    }
-  }
-}
-
 output "transform_transformations" {
   description = "Map of Transform transformation keys to their names and paths."
   value = {
@@ -326,6 +312,11 @@ output "transform_transformations" {
       path = v.path
     }
   }
+}
+
+output "kv_secrets" {
+  description = "Map of KV-V1 secret keys to their paths."
+  value       = { for k, v in vault_kv_secret.this : k => v.path }
 }
 
 ###############################################################################

@@ -66,6 +66,39 @@ variable "identity_group_memberships" {
   default = {}
 }
 
+variable "identity_entity_policies" {
+  description = "Map of identity entity policy assignments."
+  type = map(object({
+    entity_id = string
+    policies  = list(string)
+    exclusive = optional(bool, true)
+    namespace = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_group_policies" {
+  description = "Map of identity group policy assignments."
+  type = map(object({
+    group_id  = string
+    policies  = list(string)
+    exclusive = optional(bool, true)
+    namespace = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "identity_group_member_group_ids" {
+  description = "Map of identity group member group assignments."
+  type = map(object({
+    group_id         = string
+    member_group_ids = list(string)
+    exclusive        = optional(bool, true)
+    namespace        = optional(string, null)
+  }))
+  default = {}
+}
+
 ###############################################################################
 # Identity OIDC
 ###############################################################################

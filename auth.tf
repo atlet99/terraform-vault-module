@@ -53,8 +53,6 @@ resource "vault_kubernetes_auth_backend_config" "this" {
   disable_local_ca_jwt              = each.value.disable_local_ca_jwt
   pem_keys                          = each.value.pem_keys
   use_annotations_as_alias_metadata = each.value.use_annotations_as_alias_metadata
-  token_reviewer_jwt_wo             = each.value.token_reviewer_jwt_wo
-  token_reviewer_jwt_wo_version     = each.value.token_reviewer_jwt_wo_version
 }
 
 locals {
@@ -665,7 +663,6 @@ resource "vault_spiffe_auth_backend_config" "this" {
   trust_domain                    = each.value.trust_domain
   profile                         = each.value.profile
   audience                        = each.value.audience
-  defer_bundle_fetch              = each.value.defer_bundle_fetch
   bundle                          = each.value.bundle
   endpoint_url                    = each.value.endpoint_url
   endpoint_root_ca_truststore_pem = each.value.endpoint_root_ca_truststore_pem

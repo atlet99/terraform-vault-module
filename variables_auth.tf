@@ -16,8 +16,6 @@ variable "kubernetes_auth_backends" {
     disable_local_ca_jwt              = optional(bool, false)
     pem_keys                          = optional(list(string), null)
     use_annotations_as_alias_metadata = optional(bool, null)
-    token_reviewer_jwt_wo             = optional(string, null)
-    token_reviewer_jwt_wo_version     = optional(number, null)
 
     roles = optional(map(object({
       role_name                                = string
@@ -551,7 +549,6 @@ variable "spiffe_auth_backends" {
     trust_domain                    = string
     profile                         = string
     audience                        = optional(list(string))
-    defer_bundle_fetch              = optional(bool)
     bundle                          = optional(string)
     endpoint_url                    = optional(string)
     endpoint_root_ca_truststore_pem = optional(string)

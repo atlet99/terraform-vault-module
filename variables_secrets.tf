@@ -113,28 +113,6 @@ variable "pki_roles" {
   default = {}
 }
 
-variable "pki_config_urls" {
-  description = "Map of PKI secret backend URL configurations."
-  type = map(object({
-    backend                 = string
-    issuing_certificates    = optional(list(string), null)
-    crl_distribution_points = optional(list(string), null)
-    ocsp_servers            = optional(list(string), null)
-    namespace               = optional(string, null)
-  }))
-  default = {}
-}
-
-variable "pki_config_cas" {
-  description = "Map of PKI secret backend CA configurations (import existing CA)."
-  type = map(object({
-    backend    = string
-    pem_bundle = string
-    namespace  = optional(string, null)
-  }))
-  default = {}
-}
-
 variable "pki_secret_backend_config_acmes" {
   description = "A map of PKI ACME configurations."
   type = map(object({
@@ -180,6 +158,21 @@ variable "aws_roles" {
     max_sts_ttl     = optional(number, null)
     iam_groups      = optional(list(string), null)
     namespace       = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "aws_static_roles" {
+  description = "Map of AWS secret backend static roles."
+  type = map(object({
+    name                     = string
+    backend                  = optional(string, "aws")
+    username                 = string
+    rotation_period          = string
+    assume_role_arn          = optional(string, null)
+    assume_role_session_name = optional(string, null)
+    external_id              = optional(string, null)
+    namespace                = optional(string, null)
   }))
   default = {}
 }
@@ -260,6 +253,23 @@ variable "azure_secret_backend_roles" {
   default = {}
 }
 
+variable "azure_static_roles" {
+  description = "Map of Azure secret backend static roles."
+  type = map(object({
+    role                  = string
+    backend               = string
+    application_object_id = string
+    ttl                   = optional(string, null)
+    metadata              = optional(map(string), null)
+    secret_id             = optional(string, null)
+    client_secret         = optional(string, null)
+    expiration            = optional(string, null)
+    skip_import_rotation  = optional(bool, false)
+    namespace             = optional(string, null)
+  }))
+  default = {}
+}
+
 ###############################################################################
 # GCP Secret Backend
 ###############################################################################
@@ -312,27 +322,25 @@ variable "gcp_secret_backend_static_accounts" {
 variable "ldap_secret_backends" {
   description = "A map of LDAP secret backends to configure."
   type = map(object({
-    path                = optional(string, "ldap")
-    description         = optional(string, "LDAP secret backend")
-    binddn              = string
-    bindpass            = optional(string)
-    bindpass_wo         = optional(string)
-    bindpass_wo_version = optional(number)
-    url                 = optional(string)
-    userdn              = optional(string)
-    userattr            = optional(string)
-    upndomain           = optional(string)
-    insecure_tls        = optional(bool)
-    starttls            = optional(bool)
-    certificate         = optional(string)
-    client_tls_cert     = optional(string)
-    client_tls_key      = optional(string)
-    password_policy     = optional(string)
-    schema              = optional(string)
-    connection_timeout  = optional(number)
-    request_timeout     = optional(number)
-    credential_type     = optional(string)
-    namespace           = optional(string)
+    path               = optional(string, "ldap")
+    description        = optional(string, "LDAP secret backend")
+    binddn             = string
+    bindpass           = optional(string)
+    url                = optional(string)
+    userdn             = optional(string)
+    userattr           = optional(string)
+    upndomain          = optional(string)
+    insecure_tls       = optional(bool)
+    starttls           = optional(bool)
+    certificate        = optional(string)
+    client_tls_cert    = optional(string)
+    client_tls_key     = optional(string)
+    password_policy    = optional(string)
+    schema             = optional(string)
+    connection_timeout = optional(number)
+    request_timeout    = optional(number)
+    credential_type    = optional(string)
+    namespace          = optional(string)
   }))
   default = {}
 }
@@ -709,4 +717,14 @@ variable "managed_keys" {
     })))
   })
   default = null
+}
+
+variable "kv_secrets" {
+  description = "Map of KV-V1 secrets to create."
+  type = map(object({
+    path      = string
+    data_json = string
+    namespace = optional(string, null)
+  }))
+  default = {}
 }
