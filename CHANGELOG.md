@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2026-03-02
 
-## [0.1.0] - 2026-03-02
-
 ### Added
 
 - Secrets engine mounts (`vault_mount`) with full argument support
@@ -27,5 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Complete usage example in `examples/complete/`
 
 [Unreleased]: https://github.com/atlet99/terraform-vault-module/compare/v1.0.0...HEAD
-[0.1.0]: https://github.com/atlet99/terraform-vault-module/releases/tag/v0.1.0
 [1.0.0]: https://github.com/atlet99/terraform-vault-module/releases/tag/v1.0.0
