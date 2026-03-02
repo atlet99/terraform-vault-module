@@ -13,6 +13,15 @@ resource "vault_identity_entity" "this" {
   namespace         = each.value.namespace
 }
 
+resource "vault_identity_entity_policies" "this" {
+  for_each = var.identity_entity_policies
+
+  entity_id = each.value.entity_id
+  policies  = each.value.policies
+  exclusive = each.value.exclusive
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
 ###############################################################################
 # Identity Groups
 ###############################################################################
@@ -30,6 +39,15 @@ resource "vault_identity_group" "this" {
   external_member_entity_ids = each.value.external_member_entity_ids
   external_member_group_ids  = each.value.external_member_group_ids
   namespace                  = each.value.namespace
+}
+
+resource "vault_identity_group_policies" "this" {
+  for_each = var.identity_group_policies
+
+  group_id  = each.value.group_id
+  policies  = each.value.policies
+  exclusive = each.value.exclusive
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
 ###############################################################################
@@ -66,6 +84,15 @@ resource "vault_identity_group_member_entity_ids" "this" {
   member_entity_ids = each.value.member_entity_ids
   exclusive         = each.value.exclusive
   namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_identity_group_member_group_ids" "this" {
+  for_each = var.identity_group_member_group_ids
+
+  group_id         = each.value.group_id
+  member_group_ids = each.value.member_group_ids
+  exclusive        = each.value.exclusive
+  namespace        = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
 ###############################################################################

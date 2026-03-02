@@ -113,24 +113,109 @@ variable "pki_roles" {
   default = {}
 }
 
-variable "pki_config_urls" {
-  description = "Map of PKI secret backend URL configurations."
+variable "pki_backend_config_cas" {
+  description = "A map of PKI backend CA configurations."
   type = map(object({
-    backend                 = string
-    issuing_certificates    = optional(list(string), null)
-    crl_distribution_points = optional(list(string), null)
-    ocsp_servers            = optional(list(string), null)
-    namespace               = optional(string, null)
+    backend    = string
+    pem_bundle = string
+    namespace  = optional(string)
   }))
   default = {}
 }
 
-variable "pki_config_cas" {
-  description = "Map of PKI secret backend CA configurations (import existing CA)."
+variable "pki_backend_root_certs" {
+  description = "A map of PKI root certificate configurations."
   type = map(object({
-    backend    = string
-    pem_bundle = string
-    namespace  = optional(string, null)
+    backend              = string
+    type                 = string
+    common_name          = string
+    alt_names            = optional(list(string))
+    ip_sans              = optional(list(string))
+    uri_sans             = optional(list(string))
+    other_sans           = optional(list(string))
+    ttl                  = optional(string)
+    format               = optional(string)
+    private_key_format   = optional(string)
+    key_type             = optional(string)
+    key_bits             = optional(number)
+    signature_bits       = optional(number)
+    max_path_length      = optional(number)
+    exclude_cn_from_sans = optional(bool)
+    ou                   = optional(string)
+    organization         = optional(string)
+    country              = optional(string)
+    locality             = optional(string)
+    province             = optional(string)
+    street_address       = optional(string)
+    postal_code          = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_intermediate_cert_requests" {
+  description = "A map of PKI intermediate certificate request configurations."
+  type = map(object({
+    backend              = string
+    type                 = string
+    common_name          = string
+    alt_names            = optional(list(string))
+    ip_sans              = optional(list(string))
+    uri_sans             = optional(list(string))
+    other_sans           = optional(list(string))
+    format               = optional(string)
+    private_key_format   = optional(string)
+    key_type             = optional(string)
+    key_bits             = optional(number)
+    signature_bits       = optional(number)
+    exclude_cn_from_sans = optional(bool)
+    ou                   = optional(string)
+    organization         = optional(string)
+    country              = optional(string)
+    locality             = optional(string)
+    province             = optional(string)
+    street_address       = optional(string)
+    postal_code          = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_intermediate_set_signeds" {
+  description = "A map of signed intermediate certificate configurations."
+  type = map(object({
+    backend     = string
+    certificate = string
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_backend_config_auto_tidies" {
+  description = "A map of PKI auto-tidy configurations."
+  type = map(object({
+    backend                                  = string
+    enabled                                  = optional(bool)
+    interval_duration                        = optional(string)
+    issuer_safety_buffer                     = optional(string)
+    maintain_stored_certificate_counts       = optional(bool)
+    max_startup_backoff_duration             = optional(string)
+    min_startup_backoff_duration             = optional(string)
+    pause_duration                           = optional(string)
+    publish_stored_certificate_count_metrics = optional(bool)
+    revocation_queue_safety_buffer           = optional(string)
+    safety_buffer                            = optional(string)
+    tidy_acme                                = optional(bool)
+    tidy_cert_metadata                       = optional(bool)
+    tidy_cert_store                          = optional(bool)
+    tidy_cmpv2_nonce_store                   = optional(bool)
+    tidy_cross_cluster_revoked_certs         = optional(bool)
+    tidy_expired_issuers                     = optional(bool)
+    tidy_move_legacy_ca_bundle               = optional(bool)
+    tidy_revocation_queue                    = optional(bool)
+    tidy_revoked_cert_issuer_associations    = optional(bool)
+    tidy_revoked_certs                       = optional(bool)
+    namespace                                = optional(string)
   }))
   default = {}
 }
@@ -180,6 +265,21 @@ variable "aws_roles" {
     max_sts_ttl     = optional(number, null)
     iam_groups      = optional(list(string), null)
     namespace       = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "aws_static_roles" {
+  description = "Map of AWS secret backend static roles."
+  type = map(object({
+    name                     = string
+    backend                  = optional(string, "aws")
+    username                 = string
+    rotation_period          = string
+    assume_role_arn          = optional(string, null)
+    assume_role_session_name = optional(string, null)
+    external_id              = optional(string, null)
+    namespace                = optional(string, null)
   }))
   default = {}
 }
@@ -260,6 +360,23 @@ variable "azure_secret_backend_roles" {
   default = {}
 }
 
+variable "azure_static_roles" {
+  description = "Map of Azure secret backend static roles."
+  type = map(object({
+    role                  = string
+    backend               = string
+    application_object_id = string
+    ttl                   = optional(string, null)
+    metadata              = optional(map(string), null)
+    secret_id             = optional(string, null)
+    client_secret         = optional(string, null)
+    expiration            = optional(string, null)
+    skip_import_rotation  = optional(bool, false)
+    namespace             = optional(string, null)
+  }))
+  default = {}
+}
+
 ###############################################################################
 # GCP Secret Backend
 ###############################################################################
@@ -312,27 +429,25 @@ variable "gcp_secret_backend_static_accounts" {
 variable "ldap_secret_backends" {
   description = "A map of LDAP secret backends to configure."
   type = map(object({
-    path                = optional(string, "ldap")
-    description         = optional(string, "LDAP secret backend")
-    binddn              = string
-    bindpass            = optional(string)
-    bindpass_wo         = optional(string)
-    bindpass_wo_version = optional(number)
-    url                 = optional(string)
-    userdn              = optional(string)
-    userattr            = optional(string)
-    upndomain           = optional(string)
-    insecure_tls        = optional(bool)
-    starttls            = optional(bool)
-    certificate         = optional(string)
-    client_tls_cert     = optional(string)
-    client_tls_key      = optional(string)
-    password_policy     = optional(string)
-    schema              = optional(string)
-    connection_timeout  = optional(number)
-    request_timeout     = optional(number)
-    credential_type     = optional(string)
-    namespace           = optional(string)
+    path               = optional(string, "ldap")
+    description        = optional(string, "LDAP secret backend")
+    binddn             = string
+    bindpass           = optional(string)
+    url                = optional(string)
+    userdn             = optional(string)
+    userattr           = optional(string)
+    upndomain          = optional(string)
+    insecure_tls       = optional(bool)
+    starttls           = optional(bool)
+    certificate        = optional(string)
+    client_tls_cert    = optional(string)
+    client_tls_key     = optional(string)
+    password_policy    = optional(string)
+    schema             = optional(string)
+    connection_timeout = optional(number)
+    request_timeout    = optional(number)
+    credential_type    = optional(string)
+    namespace          = optional(string)
   }))
   default = {}
 }
@@ -651,62 +766,12 @@ variable "transform_roles" {
   default = {}
 }
 
-###############################################################################
-# Managed Keys (Vault Enterprise)
-###############################################################################
-
-variable "managed_keys" {
-  description = "A single configuration object for all Managed Keys. Note: Vault supports only one Managed Keys resource per namespace/state."
-  type = object({
-    namespace = optional(string)
-    aws = optional(list(object({
-      name               = string
-      access_key         = string
-      secret_key         = string
-      key_bits           = string
-      key_type           = string
-      kms_key            = string
-      curve              = optional(string)
-      endpoint           = optional(string)
-      region             = optional(string)
-      allow_generate_key = optional(bool)
-      allow_replace_key  = optional(bool)
-      allow_store_key    = optional(bool)
-      any_mount          = optional(bool)
-    })))
-    azure = optional(list(object({
-      name               = string
-      tenant_id          = string
-      client_id          = string
-      client_secret      = string
-      vault_name         = string
-      key_name           = string
-      key_type           = string
-      environment        = optional(string)
-      resource           = optional(string)
-      key_bits           = optional(number)
-      allow_generate_key = optional(bool)
-      allow_replace_key  = optional(bool)
-      allow_store_key    = optional(bool)
-      any_mount          = optional(bool)
-    })))
-    pkcs = optional(list(object({
-      name               = string
-      library            = string
-      key_label          = string
-      key_id             = string
-      mechanism          = string
-      pin                = string
-      slot               = optional(string)
-      token_label        = optional(string)
-      curve              = optional(string)
-      key_bits           = optional(number)
-      force_rw_session   = optional(bool)
-      allow_generate_key = optional(bool)
-      allow_replace_key  = optional(bool)
-      allow_store_key    = optional(bool)
-      any_mount          = optional(bool)
-    })))
-  })
-  default = null
+variable "kv_secrets" {
+  description = "Map of KV-V1 secrets to create."
+  type = map(object({
+    path      = string
+    data_json = string
+    namespace = optional(string, null)
+  }))
+  default = {}
 }

@@ -16,8 +16,6 @@ variable "kubernetes_auth_backends" {
     disable_local_ca_jwt              = optional(bool, false)
     pem_keys                          = optional(list(string), null)
     use_annotations_as_alias_metadata = optional(bool, null)
-    token_reviewer_jwt_wo             = optional(string, null)
-    token_reviewer_jwt_wo_version     = optional(number, null)
 
     roles = optional(map(object({
       role_name                                = string
@@ -551,7 +549,6 @@ variable "spiffe_auth_backends" {
     trust_domain                    = string
     profile                         = string
     audience                        = optional(list(string))
-    defer_bundle_fetch              = optional(bool)
     bundle                          = optional(string)
     endpoint_url                    = optional(string)
     endpoint_root_ca_truststore_pem = optional(string)
@@ -668,6 +665,60 @@ variable "alicloud_auth_roles" {
     token_num_uses          = optional(number)
     token_type              = optional(string)
     namespace               = optional(string)
+  }))
+  default = {}
+}
+
+variable "approle_auth_role_secret_ids" {
+  description = "A map of AppRole secret IDs to create."
+  type = map(object({
+    backend           = string
+    role_name         = string
+    metadata          = optional(string)
+    cidr_list         = optional(list(string))
+    token_bound_cidrs = optional(list(string))
+    secret_id         = optional(string)
+    wrapping_ttl      = optional(string)
+    namespace         = optional(string)
+  }))
+  default = {}
+}
+
+variable "aws_auth_backend_logins" {
+  description = "A map of AWS auth backend logins."
+  type = map(object({
+    backend                 = optional(string)
+    role                    = optional(string)
+    identity                = optional(string)
+    signature               = optional(string)
+    pkcs7                   = optional(string)
+    nonce                   = optional(string)
+    iam_http_request_method = optional(string)
+    iam_request_url         = optional(string)
+    iam_request_body        = optional(string)
+    iam_request_headers     = optional(string)
+    namespace               = optional(string)
+  }))
+  default = {}
+}
+
+variable "tokens" {
+  description = "A map of Vault tokens to create."
+  type = map(object({
+    role_name         = optional(string)
+    policies          = optional(list(string))
+    no_parent         = optional(bool)
+    no_default_policy = optional(bool)
+    renewable         = optional(bool)
+    ttl               = optional(string)
+    explicit_max_ttl  = optional(string)
+    display_name      = optional(string)
+    num_uses          = optional(number)
+    period            = optional(string)
+    renew_min_lease   = optional(number)
+    renew_increment   = optional(number)
+    metadata          = optional(map(string))
+    namespace         = optional(string)
   }))
   default = {}
 }

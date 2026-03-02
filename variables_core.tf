@@ -206,20 +206,116 @@ variable "raft_snapshot_agent_configs" {
     interval_seconds              = number
     retain                        = optional(number)
     path_prefix                   = string
+    file_prefix                   = optional(string)
     storage_type                  = string
+    local_max_space               = optional(number)
     aws_access_key                = optional(string)
     aws_secret_key                = optional(string)
+    aws_session_token             = optional(string)
     aws_s3_bucket                 = optional(string)
     aws_s3_region                 = optional(string)
     aws_s3_endpoint               = optional(string)
+    aws_s3_disable_tls            = optional(bool)
+    aws_s3_force_path_style       = optional(bool)
+    aws_s3_enable_kms             = optional(bool)
+    aws_s3_kms_key                = optional(string)
     aws_s3_server_side_encryption = optional(bool)
     google_service_account_key    = optional(string)
     google_gcs_bucket             = optional(string)
+    google_endpoint               = optional(string)
+    google_disable_tls            = optional(bool)
     azure_container               = optional(string)
     azure_account_name            = optional(string)
     azure_account_key             = optional(string)
+    azure_blob_environment        = optional(string)
     azure_endpoint                = optional(string)
     namespace                     = optional(string)
   }))
   default = {}
+}
+
+###############################################################################
+# Plugins
+###############################################################################
+
+variable "plugins" {
+  description = "A map of Vault plugins to register."
+  type = map(object({
+    type      = string
+    name      = string
+    command   = string
+    sha256    = string
+    version   = optional(string)
+    args      = optional(list(string))
+    env       = optional(list(string))
+    oci_image = optional(string)
+    runtime   = optional(string)
+  }))
+  default = {}
+}
+
+variable "plugin_pinned_versions" {
+  description = "A map of pinned plugin versions."
+  type = map(object({
+    type    = string
+    name    = string
+    version = string
+  }))
+  default = {}
+}
+
+variable "managed_keys" {
+  description = "Managed keys configuration (Vault Enterprise)."
+  type = object({
+    namespace = optional(string)
+    aws = optional(list(object({
+      name               = string
+      access_key         = string
+      secret_key         = string
+      key_bits           = string
+      key_type           = string
+      kms_key            = string
+      curve              = optional(string)
+      endpoint           = optional(string)
+      region             = optional(string)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+    azure = optional(list(object({
+      name               = string
+      tenant_id          = string
+      client_id          = string
+      client_secret      = string
+      vault_name         = string
+      key_name           = string
+      key_type           = string
+      environment        = optional(string)
+      resource           = optional(string)
+      key_bits           = optional(string)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+    pkcs = optional(list(object({
+      name               = string
+      library            = string
+      key_label          = string
+      key_id             = string
+      mechanism          = string
+      pin                = string
+      slot               = optional(string)
+      token_label        = optional(string)
+      curve              = optional(string)
+      key_bits           = optional(string)
+      force_rw_session   = optional(bool)
+      allow_generate_key = optional(bool)
+      allow_replace_key  = optional(bool)
+      allow_store_key    = optional(bool)
+      any_mount          = optional(bool)
+    })))
+  })
+  default = null
 }

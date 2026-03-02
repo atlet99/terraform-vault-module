@@ -12,6 +12,16 @@ output "identity_entities" {
   }
 }
 
+output "identity_entity_policies" {
+  description = "Map of identity entity policy assignment keys to their entity names and policies."
+  value = {
+    for k, v in vault_identity_entity_policies.this : k => {
+      entity_name = v.entity_name
+      policies    = v.policies
+    }
+  }
+}
+
 output "identity_entity_ids" {
   description = "Map of identity entity keys to their IDs."
   value       = { for k, v in vault_identity_entity.this : k => v.id }
@@ -23,6 +33,16 @@ output "identity_groups" {
     for k, v in vault_identity_group.this : k => {
       name = v.name
       id   = v.id
+    }
+  }
+}
+
+output "identity_group_policies" {
+  description = "Map of identity group policy assignment keys to their group names and policies."
+  value = {
+    for k, v in vault_identity_group_policies.this : k => {
+      group_name = v.group_name
+      policies   = v.policies
     }
   }
 }
@@ -60,6 +80,16 @@ output "identity_group_memberships" {
     for k, v in vault_identity_group_member_entity_ids.this : k => {
       group_id          = v.group_id
       member_entity_ids = v.member_entity_ids
+    }
+  }
+}
+
+output "identity_group_member_group_ids" {
+  description = "Map of identity group member group assignment keys to their group IDs and member group IDs."
+  value = {
+    for k, v in vault_identity_group_member_group_ids.this : k => {
+      group_id         = v.group_id
+      member_group_ids = v.member_group_ids
     }
   }
 }

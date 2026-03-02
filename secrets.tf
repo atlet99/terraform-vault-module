@@ -105,6 +105,19 @@ resource "vault_aws_secret_backend_role" "this" {
   namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
+resource "vault_aws_secret_backend_static_role" "this" {
+  for_each = var.aws_static_roles
+
+  backend                  = each.value.backend
+  name                     = each.value.name
+  username                 = each.value.username
+  rotation_period          = each.value.rotation_period
+  assume_role_arn          = each.value.assume_role_arn
+  assume_role_session_name = each.value.assume_role_session_name
+  external_id              = each.value.external_id
+  namespace                = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
 ###############################################################################
 # SSH Secret Backend (Phase 4)
 ###############################################################################
@@ -254,6 +267,21 @@ resource "vault_azure_secret_backend_role" "this" {
   }
 }
 
+resource "vault_azure_secret_backend_static_role" "this" {
+  for_each = var.azure_static_roles
+
+  backend               = each.value.backend
+  role                  = each.value.role
+  application_object_id = each.value.application_object_id
+  ttl                   = each.value.ttl
+  metadata              = each.value.metadata
+  secret_id             = each.value.secret_id
+  client_secret         = each.value.client_secret
+  expiration            = each.value.expiration
+  skip_import_rotation  = each.value.skip_import_rotation
+  namespace             = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
 ###############################################################################
 # GCP Secret Backend (Phase 5)
 ###############################################################################
@@ -314,27 +342,25 @@ resource "vault_gcp_secret_static_account" "this" {
 resource "vault_ldap_secret_backend" "this" {
   for_each = var.ldap_secret_backends
 
-  path                = each.value.path
-  description         = each.value.description
-  binddn              = each.value.binddn
-  bindpass            = each.value.bindpass
-  bindpass_wo         = each.value.bindpass_wo
-  bindpass_wo_version = each.value.bindpass_wo_version
-  url                 = each.value.url
-  userdn              = each.value.userdn
-  userattr            = each.value.userattr
-  upndomain           = each.value.upndomain
-  insecure_tls        = each.value.insecure_tls
-  starttls            = each.value.starttls
-  certificate         = each.value.certificate
-  client_tls_cert     = each.value.client_tls_cert
-  client_tls_key      = each.value.client_tls_key
-  password_policy     = each.value.password_policy
-  schema              = each.value.schema
-  connection_timeout  = each.value.connection_timeout
-  request_timeout     = each.value.request_timeout
-  credential_type     = each.value.credential_type
-  namespace           = each.value.namespace != null ? each.value.namespace : var.namespace
+  path               = each.value.path
+  description        = each.value.description
+  binddn             = each.value.binddn
+  bindpass           = each.value.bindpass
+  url                = each.value.url
+  userdn             = each.value.userdn
+  userattr           = each.value.userattr
+  upndomain          = each.value.upndomain
+  insecure_tls       = each.value.insecure_tls
+  starttls           = each.value.starttls
+  certificate        = each.value.certificate
+  client_tls_cert    = each.value.client_tls_cert
+  client_tls_key     = each.value.client_tls_key
+  password_policy    = each.value.password_policy
+  schema             = each.value.schema
+  connection_timeout = each.value.connection_timeout
+  request_timeout    = each.value.request_timeout
+  credential_type    = each.value.credential_type
+  namespace          = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
 resource "vault_ldap_secret_backend_library_set" "this" {
@@ -359,6 +385,103 @@ resource "vault_ldap_secret_backend_static_role" "this" {
   rotation_period      = each.value.rotation_period
   skip_import_rotation = each.value.skip_import_rotation
   namespace            = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_config_ca" "this" {
+  for_each = var.pki_backend_config_cas
+
+  backend    = each.value.backend
+  pem_bundle = each.value.pem_bundle
+  namespace  = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_root_cert" "this" {
+  for_each = var.pki_backend_root_certs
+
+  backend              = each.value.backend
+  type                 = each.value.type
+  common_name          = each.value.common_name
+  alt_names            = each.value.alt_names
+  ip_sans              = each.value.ip_sans
+  uri_sans             = each.value.uri_sans
+  other_sans           = each.value.other_sans
+  ttl                  = each.value.ttl
+  format               = each.value.format
+  private_key_format   = each.value.private_key_format
+  key_type             = each.value.key_type
+  key_bits             = each.value.key_bits
+  signature_bits       = each.value.signature_bits
+  max_path_length      = each.value.max_path_length
+  exclude_cn_from_sans = each.value.exclude_cn_from_sans
+  ou                   = each.value.ou
+  organization         = each.value.organization
+  country              = each.value.country
+  locality             = each.value.locality
+  province             = each.value.province
+  street_address       = each.value.street_address
+  postal_code          = each.value.postal_code
+  namespace            = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_intermediate_cert_request" "this" {
+  for_each = var.pki_backend_intermediate_cert_requests
+
+  backend              = each.value.backend
+  type                 = each.value.type
+  common_name          = each.value.common_name
+  alt_names            = each.value.alt_names
+  ip_sans              = each.value.ip_sans
+  uri_sans             = each.value.uri_sans
+  other_sans           = each.value.other_sans
+  format               = each.value.format
+  private_key_format   = each.value.private_key_format
+  key_type             = each.value.key_type
+  key_bits             = each.value.key_bits
+  signature_bits       = each.value.signature_bits
+  exclude_cn_from_sans = each.value.exclude_cn_from_sans
+  ou                   = each.value.ou
+  organization         = each.value.organization
+  country              = each.value.country
+  locality             = each.value.locality
+  province             = each.value.province
+  street_address       = each.value.street_address
+  postal_code          = each.value.postal_code
+  namespace            = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_intermediate_set_signed" "this" {
+  for_each = var.pki_backend_intermediate_set_signeds
+
+  backend     = each.value.backend
+  certificate = each.value.certificate
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_config_auto_tidy" "this" {
+  for_each = var.pki_backend_config_auto_tidies
+
+  backend                                  = each.value.backend
+  enabled                                  = each.value.enabled
+  interval_duration                        = each.value.interval_duration
+  issuer_safety_buffer                     = each.value.issuer_safety_buffer
+  maintain_stored_certificate_counts       = each.value.maintain_stored_certificate_counts
+  max_startup_backoff_duration             = each.value.max_startup_backoff_duration
+  min_startup_backoff_duration             = each.value.min_startup_backoff_duration
+  pause_duration                           = each.value.pause_duration
+  publish_stored_certificate_count_metrics = each.value.publish_stored_certificate_count_metrics
+  revocation_queue_safety_buffer           = each.value.revocation_queue_safety_buffer
+  safety_buffer                            = each.value.safety_buffer
+  tidy_acme                                = each.value.tidy_acme
+  tidy_cert_metadata                       = each.value.tidy_cert_metadata
+  tidy_cert_store                          = each.value.tidy_cert_store
+  tidy_cmpv2_nonce_store                   = each.value.tidy_cmpv2_nonce_store
+  tidy_cross_cluster_revoked_certs         = each.value.tidy_cross_cluster_revoked_certs
+  tidy_expired_issuers                     = each.value.tidy_expired_issuers
+  tidy_move_legacy_ca_bundle               = each.value.tidy_move_legacy_ca_bundle
+  tidy_revocation_queue                    = each.value.tidy_revocation_queue
+  tidy_revoked_cert_issuer_associations    = each.value.tidy_revoked_cert_issuer_associations
+  tidy_revoked_certs                       = each.value.tidy_revoked_certs
+  namespace                                = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
 ###############################################################################
@@ -654,4 +777,12 @@ resource "vault_transform_role" "this" {
   path            = each.value.path
   transformations = each.value.transformations
   namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_kv_secret" "this" {
+  for_each = var.kv_secrets
+
+  path      = each.value.path
+  data_json = each.value.data_json
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
 }

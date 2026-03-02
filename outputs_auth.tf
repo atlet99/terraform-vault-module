@@ -291,3 +291,40 @@ output "alicloud_auth_roles" {
     }
   }
 }
+
+###############################################################################
+# Advanced Authentication
+###############################################################################
+
+output "approle_auth_role_secret_ids" {
+  description = "Map of AppRole secret ID keys to their accessors."
+  value = {
+    for k, v in vault_approle_auth_backend_role_secret_id.this : k => {
+      accessor          = v.accessor
+      wrapping_accessor = v.wrapping_accessor
+    }
+  }
+}
+
+output "aws_auth_backend_logins" {
+  description = "Map of AWS login keys to their client tokens and accessors."
+  value = {
+    for k, v in vault_aws_auth_backend_login.this : k => {
+      client_token   = v.client_token
+      accessor       = v.accessor
+      lease_duration = v.lease_duration
+    }
+  }
+  sensitive = true
+}
+
+output "tokens" {
+  description = "Map of token keys to their client tokens and accessors."
+  value = {
+    for k, v in vault_token.this : k => {
+      client_token   = v.client_token
+      lease_duration = v.lease_duration
+    }
+  }
+  sensitive = true
+}

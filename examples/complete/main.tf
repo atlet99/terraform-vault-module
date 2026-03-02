@@ -1,13 +1,12 @@
 ###############################################################################
-# Complete Example
-# Demonstrates all resource types supported by the module.
+# Complete Example - Main configuration hub
+# Demonstrates all resource types supported by the module using split local blocks
 ###############################################################################
 
 module "vault" {
   source = "../../"
 
   # -- Secrets Engine Mounts --------------------------------------------------
-
   mounts = {
     kv = {
       path           = "secret"
@@ -16,13 +15,11 @@ module "vault" {
       options        = { version = "2" }
       force_no_cache = true
     }
-
     transit = {
       path        = "transit"
       type        = "transit"
       description = "Transit encryption engine"
     }
-
     pki = {
       path                  = "pki"
       type                  = "pki"
@@ -32,13 +29,11 @@ module "vault" {
   }
 
   # -- Auth Backends -----------------------------------------------------------
-
   auth_backends = {
     approle = {
       type        = "approle"
       description = "AppRole auth"
     }
-
     userpass = {
       type        = "userpass"
       description = "Username/Password auth"
@@ -49,45 +44,7 @@ module "vault" {
     }
   }
 
-  # -- Policies ----------------------------------------------------------------
-
-  policies = {
-    admin = {
-      name   = "admin"
-      policy = <<-EOT
-        path "*" {
-          capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-        }
-      EOT
-    }
-
-    readonly = {
-      name   = "readonly"
-      policy = <<-EOT
-        path "secret/data/*" {
-          capabilities = ["read", "list"]
-        }
-      EOT
-    }
-
-    app_team = {
-      name   = "app-team"
-      policy = <<-EOT
-        path "secret/data/app/*" {
-          capabilities = ["create", "read", "update", "list"]
-        }
-        path "transit/encrypt/app-key" {
-          capabilities = ["update"]
-        }
-        path "transit/decrypt/app-key" {
-          capabilities = ["update"]
-        }
-      EOT
-    }
-  }
-
   # -- Audit Devices -----------------------------------------------------------
-
   audit_devices = {
     file = {
       type        = "file"
@@ -98,63 +55,8 @@ module "vault" {
     }
   }
 
-  # -- Kubernetes Auth ---------------------------------------------------------
-
-  kubernetes_auth_backends = {
-    primary = {
-      path                   = "kubernetes"
-      description            = "Primary K8s cluster auth"
-      kubernetes_host        = "https://kubernetes.default.svc"
-      disable_iss_validation = true
-
-      roles = {
-        app = {
-          role_name                        = "app"
-          bound_service_account_names      = ["app-sa"]
-          bound_service_account_namespaces = ["default", "app"]
-          token_policies                   = ["app-team"]
-          token_ttl                        = 3600
-          token_max_ttl                    = 86400
-        }
-
-        monitoring = {
-          role_name                        = "monitoring"
-          bound_service_account_names      = ["prometheus-sa"]
-          bound_service_account_namespaces = ["monitoring"]
-          token_policies                   = ["readonly"]
-          token_ttl                        = 1800
-        }
-      }
-    }
-  }
-
-  # -- KV-V2 Backend Config ----------------------------------------------------
-
-  kv_secret_backend_v2_config = {
-    secret = {
-      mount        = "secret"
-      max_versions = 10
-      cas_required = false
-    }
-  }
-
-  # -- KV-V2 Secrets ----------------------------------------------------------
-
-  kv_secrets_v2 = {
-    app_config = {
-      mount = "secret"
-      name  = "app/config"
-      data_json = jsonencode({
-        db_host = "db.example.com"
-        db_port = "5432"
-      })
-    }
-  }
-
   # -- Generic Endpoints -------------------------------------------------------
-
   generic_endpoints = {
-    # Custom configuration example
     sys_config = {
       path = "sys/config/ui/custom-message"
       data_json = jsonencode({
@@ -163,453 +65,34 @@ module "vault" {
     }
   }
 
-  # -- AppRole Auth Roles ----------------------------------------------------
-
-  approle_auth_roles = {
-    app_role = {
-      role_name      = "app-role"
-      token_policies = ["app_team"]
-      token_ttl      = 3600
-    }
+  # -- Plugins -----------------------------------------------------------------
+  plugins = {
+    # Example plugin registration (requires the plugin binary to be present)
+    # custom_plugin = {
+    #   name    = "custom-plugin"
+    #   type    = "secret"
+    #   command = "custom-plugin"
+    #   sha256  = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" # SHA256 of empty string for template
+    # }
   }
 
-  # -- JWT/OIDC Auth Roles ---------------------------------------------------
-
-  jwt_oidc_auth_roles = {
-    oidc_role = {
-      role_name             = "oidc-role"
-      role_type             = "oidc"
-      bound_audiences       = ["vault-client-id"]
-      user_claim            = "sub"
-      token_policies        = ["readonly"]
-      allowed_redirect_uris = ["http://localhost:8200/ui/vault/auth/oidc/oidc/callback"]
-    }
-  }
-
-  # -- Transit Keys ----------------------------------------------------------
-
-  transit_keys = {
-    app_key = {
-      name             = "app-key-v2"
-      backend          = "transit"
-      type             = "aes256-gcm96"
-      deletion_allowed = true
-    }
-  }
-
-  # -- Password Policies -----------------------------------------------------
-
-  password_policies = {
-    complex = {
-      name   = "complex-policy"
-      policy = <<-EOT
-        length = 24
-        rule "charset" {
-          charset = "abcdefghijklmnopqrstuvwxyz"
-          min-chars = 1
-        }
-        rule "charset" {
-          charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-          min-chars = 1
-        }
-        rule "charset" {
-          charset = "0123456789"
-          min-chars = 1
-        }
-        rule "charset" {
-          charset = "!@#$%^&*()-_=+"
-          min-chars = 1
-        }
-      EOT
-    }
-  }
-
-  # -- Database Connections (Phase 3) -----------------------------------------
-
-  database_connections = {
-    postgres = {
-      name    = "postgres"
-      backend = "database"
-      postgresql = {
-        connection_url = "postgresql://{{username}}:{{password}}@localhost:5432/postgres"
-      }
-    }
-  }
-
-  database_roles = {
-    readonly = {
-      name                = "readonly"
-      backend             = "database"
-      db_name             = "postgres"
-      creation_statements = ["CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";"]
-    }
-  }
-
-  database_static_roles = {
-    app_user = {
-      name            = "app-user"
-      backend         = "database"
-      db_name         = "postgres"
-      username        = "app_service"
-      rotation_period = 86400
-    }
-  }
-
-  # -- PKI Roles (Phase 3) ----------------------------------------------------
-
-  pki_roles = {
-    internal_tls = {
-      name             = "internal-tls"
-      backend          = "pki"
-      allow_subdomains = true
-      allowed_domains  = ["internal.example.com"]
-      ttl              = "24h"
-    }
-  }
-
-  # -- AWS Roles (Phase 3) ----------------------------------------------------
-
-  aws_roles = {
-    lambda_sqs = {
-      name            = "lambda-sqs"
-      backend         = "aws"
-      credential_type = "iam_user"
-      policy_arns     = ["arn:aws:iam::aws:policy/AmazonSQSFullAccess"]
-    }
-  }
-
-  # -- GitHub Auth (Phase 3) --------------------------------------------------
-
-  github_auth_backends = {
-    main = {
-      path         = "github"
-      organization = "example-org"
-    }
-  }
-
-  # -- Identity Entities ------------------------------------------------------
-
-  identity_entities = {
-    john_doe = {
-      name     = "john-doe"
-      metadata = { team = "platform", role = "engineer" }
-      policies = ["readonly"]
-    }
-
-    app_service = {
-      name     = "app-service"
-      metadata = { project = "billing" }
-      policies = ["app_team"]
-    }
-  }
-
-  # -- Identity Groups ---------------------------------------------------------
-
-  identity_groups = {
-    platform_team = {
-      name     = "platform-team"
-      metadata = { department = "infrastructure" }
-      policies = ["admin"]
-    }
-  }
-
-  # -- Identity Aliases --------------------------------------------------------
-  # Note: Aliases link external identifiers to Vault entities/groups.
-  # The mount_accessor can be obtained from the auth_backend outputs.
-
-  identity_entity_aliases = {
-    john_kubernetes = {
-      name           = "john-doe-sa"
-      mount_accessor = "auth_kubernetes_12345678" # Example accessor
-      canonical_id   = "pending"                  # Replaced by entity ID in practice
-    }
-  }
-
-  identity_group_aliases = {
-    platform_kubernetes = {
-      name           = "platform-team-sa"
-      mount_accessor = "auth_kubernetes_12345678"
-      canonical_id   = "pending"
-    }
-  }
-
-  # -- SSH Roles (Phase 4) ----------------------------------------------------
-
-  ssh_roles = {
-    otp = {
-      name     = "otp-role"
-      backend  = "ssh"
-      key_type = "otp"
-    }
-
-    ca = {
-      name                    = "ca-role"
-      backend                 = "ssh"
-      key_type                = "ca"
-      allow_user_certificates = true
-      allowed_users           = "ubuntu,admin"
-      ttl                     = "1h"
-    }
-  }
-
-  # -- Token Roles (Phase 4) --------------------------------------------------
-
-  token_auth_backend_roles = {
-    utility = {
-      role_name        = "utility-token"
-      allowed_policies = ["readonly"]
-      orphan           = true
-      renewable        = true
-      token_ttl        = 3600
-    }
-  }
-
-  # -- Audit Headers (Phase 4) ------------------------------------------------
-
-  audit_request_headers = {
-    x_forwarded_for = {
-      name = "X-Forwarded-For"
-      hmac = false
-    }
-  }
-
-  # -- Identity OIDC & MFA (Phase 4) -------------------------------------------
-
-  identity_oidc_keys = {
-    default = {
-      name             = "default-key"
-      algorithm        = "RS256"
-      verification_ttl = 86400
-    }
-  }
-
-  identity_oidc_clients = {
-    web_app = {
-      name          = "web-app"
-      key           = "default-key"
-      redirect_uris = ["http://localhost:3000/callback"]
-      client_type   = "confidential"
-    }
-  }
-
-  identity_mfa_totp = {
-    google_auth = {
-      issuer  = "Vault-Example"
-      digits  = 6
-      qr_size = 200
-    }
-  }
-
-  # -- Phase 6: Additional Auth Backends --------------------------------------
-
-  aws_auth_backends = {
-    "aws-prod" = {
-      path                       = "aws"
-      description                = "AWS Auth Backend for Production"
-      iam_server_id_header_value = "vault.example.com"
-      max_retries                = 3
-    }
-  }
-
-  aws_auth_roles = {
-    "ec2-role" = {
-      role                     = "prod-ec2-role"
-      backend                  = "aws"
-      auth_type                = "ec2"
-      bound_ami_ids            = ["ami-0c55b159cbfafe1f0"]
-      bound_account_ids        = ["123456789012"]
-      inferred_entity_type     = "ec2_instance"
-      allow_instance_migration = true
-      token_policies           = ["default", "prod-policy"]
-      token_max_ttl            = 3600
-    }
-    "iam-role" = {
-      role                     = "prod-iam-role"
-      backend                  = "aws"
-      auth_type                = "iam"
-      bound_iam_principal_arns = ["arn:aws:iam::123456789012:role/MyDevRole"]
-      resolve_aws_unique_ids   = false
-      token_policies           = ["default", "dev-policy"]
-      token_ttl                = 1800
-    }
-  }
-
-  azure_auth_backends = {
-    "azure-prod" = {
-      path        = "azure"
-      description = "Azure Auth Backend"
-      tenant_id   = "00000000-0000-0000-0000-000000000000"
-      resource    = "https://management.azure.com/"
-    }
-  }
-
-  azure_auth_roles = {
-    "dev-role" = {
-      role                   = "dev-role"
-      backend                = "azure"
-      bound_subscription_ids = ["00000000-0000-0000-0000-000000000000"]
-      bound_resource_groups  = ["rg-dev"]
-      token_policies         = ["default", "azure-policy"]
-      token_ttl              = 3600
-    }
-  }
-
-  gcp_auth_backends = {
-    "gcp-prod" = {
-      path        = "gcp"
-      description = "GCP Auth Backend"
-    }
-  }
-
-  gcp_auth_roles = {
-    "compute-role" = {
-      role                = "compute-role"
-      backend             = "gcp"
-      type                = "gce"
-      bound_projects      = ["my-gcp-project"]
-      bound_zones         = ["us-central1-a"]
-      token_policies      = ["default", "gcp-policy"]
-      token_ttl           = 3600
-      allow_gce_inference = true
-    }
-  }
-
-  ldap_auth_backends = {
-    "ldap-corp" = {
-      path              = "ldap"
-      description       = "Corporate LDAP Auth Backend"
-      url               = "ldaps://ldap.example.com"
-      userdn            = "ou=Users,dc=example,dc=com"
-      userattr          = "uid"
-      upndomain         = "example.com"
-      discoverdn        = false
-      groupdn           = "ou=Groups,dc=example,dc=com"
-      groupattr         = "cn"
-      username_as_alias = true
-    }
-  }
-
-  ldap_auth_groups = {
-    "engineering" = {
-      groupname = "engineering"
-      backend   = "ldap"
-      policies  = ["engineering-policy", "default"]
-    }
-  }
-
-  okta_auth_backends = {
-    "okta-corp" = {
-      path         = "okta"
-      description  = "Corporate Okta Auth Backend"
-      organization = "example"
-      base_url     = "okta.com"
-    }
-  }
-
-  okta_auth_groups = {
-    "developers" = {
-      group_name = "developers"
-      path       = "okta"
-      policies   = ["developer-policy"]
-    }
-  }
-
-  okta_auth_users = {
-    "john.doe" = {
-      username = "john.doe"
-      path     = "okta"
-      groups   = ["engineers"]
-      policies = ["admin-policy"]
-    }
-  }
-
-  cert_auth_backends = {
-    "cert-prod" = {
-      path        = "cert"
-      description = "TLS Certificate Auth Backend"
-    }
-  }
-
-  cert_auth_roles = {
-    "web-servers" = {
-      name           = "web-servers"
-      backend        = "cert"
-      certificate    = "my-ca-cert-pem-data"
-      allowed_names  = ["web-*.example.com"]
-      token_policies = ["web-policy"]
-      token_ttl      = 3600
-    }
-  }
-}
-
-###############################################################################
-# Outputs
-###############################################################################
-
-output "mount_paths" {
-  value = module.vault.mount_paths
-}
-
-output "auth_backend_paths" {
-  value = module.vault.auth_backend_paths
-}
-
-output "policy_names" {
-  value = module.vault.policy_names
-}
-
-output "kubernetes_auth_paths" {
-  value = module.vault.kubernetes_auth_backend_paths
-}
-
-output "identity_entity_ids" {
-  value = module.vault.identity_entity_ids
-}
-
-output "identity_group_ids" {
-  value = module.vault.identity_group_ids
-}
-
-output "identity_entity_aliases" {
-  value = module.vault.identity_entity_aliases
-}
-
-output "identity_group_aliases" {
-  value = module.vault.identity_group_aliases
-}
-
-output "approle_auth_roles" {
-  value = module.vault.approle_auth_roles
-}
-
-output "jwt_oidc_auth_roles" {
-  value = module.vault.jwt_oidc_auth_roles
-}
-
-output "transit_keys" {
-  value = module.vault.transit_keys
-}
-
-output "password_policies" {
-  value = module.vault.password_policies
-}
-
-output "database_connections" {
-  value = module.vault.database_connections
-}
-
-output "database_roles" {
-  value = module.vault.database_roles
-}
-
-output "pki_roles" {
-  value = module.vault.pki_roles
-}
-
-output "aws_roles" {
-  value = module.vault.aws_roles
-}
-
-output "github_auth_backends" {
-  value = module.vault.github_auth_backends
+  # Incorporate refactored variables
+  kubernetes_auth_backends = local.kubernetes_auth_backends
+  approle_auth_roles       = local.approle_auth_roles
+  jwt_oidc_auth_roles      = local.jwt_oidc_auth_roles
+
+  kv_secret_backend_v2_config = local.kv_secret_backend_v2_config
+  kv_secrets_v2               = local.kv_secrets_v2
+  kv_secrets                  = local.kv_secrets
+  transit_keys                = local.transit_keys
+
+  policies                   = local.policies
+  identity_entities          = local.identity_entities
+  identity_groups            = local.identity_groups
+  identity_group_memberships = local.identity_group_memberships
+
+  namespaces                       = local.namespaces
+  raft_autopilot                   = local.raft_autopilot
+  secrets_sync_vercel_destinations = local.secrets_sync_vercel_destinations
+  secrets_sync_gh_destinations     = local.secrets_sync_gh_destinations
 }

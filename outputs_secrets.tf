@@ -75,14 +75,61 @@ output "pki_secret_backend_acme_eabs" {
   }
 }
 
-###############################################################################
-# AWS Secret Backend
-###############################################################################
+output "pki_backend_config_cas" {
+  description = "Map of PKI backend CA config keys to their backend paths."
+  value       = { for k, v in vault_pki_secret_backend_config_ca.this : k => v.backend }
+}
+
+output "pki_backend_root_certs" {
+  description = "Map of PKI root certificate keys to their certificate details."
+  value = {
+    for k, v in vault_pki_secret_backend_root_cert.this : k => {
+      certificate   = v.certificate
+      issuing_ca    = v.issuing_ca
+      serial_number = v.serial_number
+      issuer_id     = v.issuer_id
+    }
+  }
+}
+
+output "pki_backend_intermediate_cert_requests" {
+  description = "Map of PKI intermediate CSR keys to their CSR details."
+  value = {
+    for k, v in vault_pki_secret_backend_intermediate_cert_request.this : k => {
+      csr = v.csr
+    }
+  }
+}
+
+output "pki_backend_intermediate_set_signeds" {
+  description = "Map of signed intermediate cert keys to their imported status."
+  value = {
+    for k, v in vault_pki_secret_backend_intermediate_set_signed.this : k => {
+      imported_issuers = v.imported_issuers
+      imported_keys    = v.imported_keys
+    }
+  }
+}
+
+output "pki_backend_config_auto_tidies" {
+  description = "Map of PKI auto-tidy keys to their backend paths."
+  value       = { for k, v in vault_pki_secret_backend_config_auto_tidy.this : k => v.backend }
+}
 
 output "aws_roles" {
   description = "Map of AWS role keys to their names and backend paths."
   value = {
     for k, v in vault_aws_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "aws_static_roles" {
+  description = "Map of AWS static role keys to their names and backend paths."
+  value = {
+    for k, v in vault_aws_secret_backend_static_role.this : k => {
       name    = v.name
       backend = v.backend
     }
@@ -116,6 +163,16 @@ output "azure_secret_backend_roles" {
   description = "Map of Azure secret backend role keys to their role names and backend paths."
   value = {
     for k, v in vault_azure_secret_backend_role.this : k => {
+      role    = v.role
+      backend = v.backend
+    }
+  }
+}
+
+output "azure_static_roles" {
+  description = "Map of Azure static role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_azure_secret_backend_static_role.this : k => {
       role    = v.role
       backend = v.backend
     }
@@ -158,16 +215,6 @@ output "gcp_secret_backend_static_accounts" {
 output "ldap_secret_backends" {
   description = "Map of LDAP secret backend keys to their paths."
   value       = { for k, v in vault_ldap_secret_backend.this : k => v.path }
-}
-
-output "ldap_secret_backend_static_roles" {
-  description = "Map of LDAP secret static role keys to their role names and mount paths."
-  value = {
-    for k, v in vault_ldap_secret_backend_static_role.this : k => {
-      role_name = v.role_name
-      mount     = v.mount
-    }
-  }
 }
 
 output "ldap_secret_backend_library_sets" {
@@ -298,26 +345,6 @@ output "transform_alphabets" {
   value       = { for k, v in vault_transform_alphabet.this : k => v.name }
 }
 
-output "transform_roles" {
-  description = "Map of Transform role keys to their names and paths."
-  value = {
-    for k, v in vault_transform_role.this : k => {
-      name = v.name
-      path = v.path
-    }
-  }
-}
-
-output "transform_templates" {
-  description = "Map of Transform template keys to their names and paths."
-  value = {
-    for k, v in vault_transform_template.this : k => {
-      name = v.name
-      path = v.path
-    }
-  }
-}
-
 output "transform_transformations" {
   description = "Map of Transform transformation keys to their names and paths."
   value = {
@@ -328,11 +355,8 @@ output "transform_transformations" {
   }
 }
 
-###############################################################################
-# Managed Keys
-###############################################################################
 
-output "managed_keys" {
-  description = "The ID of the Managed Keys resource."
-  value       = var.managed_keys != null ? vault_managed_keys.this[0].id : null
+output "kv_secrets" {
+  description = "Map of KV-V1 secret keys to their paths."
+  value       = { for k, v in vault_kv_secret.this : k => v.path }
 }
