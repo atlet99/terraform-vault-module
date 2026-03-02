@@ -111,7 +111,9 @@ rule "terraform_naming_convention" {
 }
 
 rule "terraform_standard_module_structure" {
-  enabled = true
+  # Disabled: variables and outputs are intentionally split across themed files
+  # (variables_core.tf, variables_auth.tf, etc.) for better maintainability.
+  enabled = false
 }
 
 rule "terraform_unused_required_providers" {
