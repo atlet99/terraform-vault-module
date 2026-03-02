@@ -427,3 +427,42 @@ output "identity_oidc_providers" {
   description = "Map of Identity OIDC provider keys to their names."
   value       = { for k, v in vault_identity_oidc_provider.this : k => v.name }
 }
+
+###############################################################################
+# Additional Secret Engines Outputs
+###############################################################################
+
+output "consul_secret_backends" {
+  description = "Map of Consul secret backend keys to their paths."
+  value       = { for k, v in vault_consul_secret_backend.this : k => v.path }
+}
+
+output "nomad_secret_backends" {
+  description = "Map of Nomad secret backend keys to their paths."
+  value       = { for k, v in vault_nomad_secret_backend.this : k => v.backend }
+}
+
+output "mongodbatlas_secret_backends" {
+  description = "Map of MongoDB Atlas secret backend keys to their mount paths."
+  value       = { for k, v in vault_mongodbatlas_secret_backend.this : k => v.mount }
+}
+
+output "rabbitmq_secret_backends" {
+  description = "Map of RabbitMQ secret backend keys to their paths."
+  value       = { for k, v in vault_rabbitmq_secret_backend.this : k => v.path }
+}
+
+output "terraform_cloud_secret_backends" {
+  description = "Map of Terraform Cloud secret backend keys to their paths."
+  value       = { for k, v in vault_terraform_cloud_secret_backend.this : k => v.backend }
+}
+
+output "kmip_secret_backends" {
+  description = "Map of KMIP secret backend keys to their paths."
+  value       = { for k, v in vault_kmip_secret_backend.this : k => v.path }
+}
+
+output "transform_alphabets" {
+  description = "Map of Transform alphabet keys to their names."
+  value       = { for k, v in vault_transform_alphabet.this : k => v.name }
+}

@@ -388,3 +388,270 @@ resource "vault_pki_secret_backend_acme_eab" "this" {
   role      = each.value.role
   namespace = each.value.namespace != null ? each.value.namespace : var.namespace
 }
+
+###############################################################################
+# Consul Secret Backend
+###############################################################################
+
+resource "vault_consul_secret_backend" "this" {
+  for_each = var.consul_secret_backends
+
+  path                      = each.value.path
+  description               = each.value.description
+  address                   = each.value.address
+  scheme                    = each.value.scheme
+  token                     = each.value.token
+  default_lease_ttl_seconds = each.value.default_lease_ttl_seconds
+  max_lease_ttl_seconds     = each.value.max_lease_ttl_seconds
+  namespace                 = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_consul_secret_backend_role" "this" {
+  for_each = var.consul_secret_roles
+
+  name               = each.value.name
+  backend            = each.value.backend
+  policies           = each.value.policies
+  consul_namespace   = each.value.consul_namespace
+  consul_roles       = each.value.consul_roles
+  partition          = each.value.partition
+  node_identities    = each.value.node_identities
+  service_identities = each.value.service_identities
+  ttl                = each.value.ttl
+  max_ttl            = each.value.max_ttl
+  namespace          = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Nomad Secret Backend
+###############################################################################
+
+resource "vault_nomad_secret_backend" "this" {
+  for_each = var.nomad_secret_backends
+
+  backend                   = each.value.path
+  description               = each.value.description
+  address                   = each.value.address
+  token                     = each.value.token
+  max_token_name_length     = each.value.max_token_name_length
+  default_lease_ttl_seconds = each.value.default_lease_ttl_seconds
+  max_lease_ttl_seconds     = each.value.max_lease_ttl_seconds
+  namespace                 = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_nomad_secret_role" "this" {
+  for_each = var.nomad_secret_roles
+
+  role      = each.value.role
+  backend   = each.value.backend
+  policies  = each.value.policies
+  global    = each.value.global
+  type      = each.value.type
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# MongoDB Atlas Secret Backend
+###############################################################################
+
+resource "vault_mongodbatlas_secret_backend" "this" {
+  for_each = var.mongodbatlas_secret_backends
+
+  mount       = each.value.path
+  private_key = each.value.private_key
+  public_key  = each.value.public_key
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_mongodbatlas_secret_role" "this" {
+  for_each = var.mongodbatlas_secret_roles
+
+  name            = each.value.name
+  mount           = each.value.mount
+  organization_id = each.value.organization_id
+  project_id      = each.value.project_id
+  roles           = each.value.roles
+  project_roles   = each.value.project_roles
+  ip_addresses    = each.value.ip_addresses
+  cidr_blocks     = each.value.cidr_blocks
+  ttl             = each.value.ttl
+  max_ttl         = each.value.max_ttl
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# RabbitMQ Secret Backend
+###############################################################################
+
+resource "vault_rabbitmq_secret_backend" "this" {
+  for_each = var.rabbitmq_secret_backends
+
+  path              = each.value.path
+  description       = each.value.description
+  connection_uri    = each.value.connection_uri
+  username          = each.value.username
+  password          = each.value.password
+  verify_connection = each.value.verify_connection
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_rabbitmq_secret_backend_role" "this" {
+  for_each = var.rabbitmq_secret_roles
+
+  name      = each.value.name
+  backend   = each.value.backend
+  tags      = each.value.tags
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "vhost" {
+    for_each = each.value.vhost != null ? each.value.vhost : {}
+    content {
+      host      = vhost.key
+      configure = vhost.value.configure
+      read      = vhost.value.read
+      write     = vhost.value.write
+    }
+  }
+
+  dynamic "vhost_topic" {
+    for_each = each.value.vhost_topics != null ? each.value.vhost_topics : {}
+    content {
+      host = vhost_topic.key
+      dynamic "vhost" {
+        for_each = vhost_topic.value
+        content {
+          topic = vhost.key
+          read  = vhost.value.read
+          write = vhost.value.write
+        }
+      }
+    }
+  }
+}
+
+###############################################################################
+# Terraform Cloud Secret Backend
+###############################################################################
+
+resource "vault_terraform_cloud_secret_backend" "this" {
+  for_each = var.terraform_cloud_secret_backends
+
+  backend     = each.value.path
+  description = each.value.description
+  token       = each.value.token
+  address     = each.value.address
+  base_path   = each.value.base_path
+  namespace   = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_terraform_cloud_secret_role" "this" {
+  for_each = var.terraform_cloud_secret_roles
+
+  name         = each.value.name
+  backend      = each.value.backend
+  organization = each.value.organization
+  team_id      = each.value.team_id
+  user_id      = each.value.user_id
+  ttl          = each.value.ttl
+  max_ttl      = each.value.max_ttl
+  namespace    = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# KMIP Secret Backend
+###############################################################################
+
+resource "vault_kmip_secret_backend" "this" {
+  for_each = var.kmip_secret_backends
+
+  path                        = each.value.path
+  description                 = each.value.description
+  listen_addrs                = each.value.listen_addrs
+  tls_ca_key_type             = each.value.tls_ca_key_type
+  tls_ca_key_bits             = each.value.tls_ca_key_bits
+  tls_min_version             = each.value.tls_min_version
+  server_hostnames            = each.value.server_hostnames
+  server_ips                  = each.value.server_ips
+  default_tls_client_key_type = each.value.default_tls_client_key_type
+  default_tls_client_key_bits = each.value.default_tls_client_key_bits
+  default_tls_client_ttl      = each.value.default_tls_client_ttl
+  namespace                   = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_kmip_secret_role" "this" {
+  for_each = var.kmip_secret_roles
+
+  role                        = each.value.role
+  path                        = each.value.path
+  scope                       = each.value.scope
+  tls_client_key_type         = each.value.tls_client_key_type
+  tls_client_key_bits         = each.value.tls_client_key_bits
+  tls_client_ttl              = each.value.tls_client_ttl
+  operation_all               = each.value.operation_all
+  operation_activate          = each.value.operation_activate
+  operation_create            = each.value.operation_create
+  operation_get               = each.value.operation_get
+  operation_get_attributes    = each.value.operation_get_attributes
+  operation_destroy           = each.value.operation_destroy
+  operation_discover_versions = each.value.operation_discover_versions
+  operation_register          = each.value.operation_register
+  operation_revoke            = each.value.operation_revoke
+  namespace                   = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_kmip_secret_scope" "this" {
+  for_each = var.kmip_secret_scopes
+
+  scope     = each.value.scope
+  path      = each.value.path
+  force     = each.value.force
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Transform Engine
+###############################################################################
+
+resource "vault_transform_alphabet" "this" {
+  for_each = var.transform_alphabets
+
+  name      = each.value.name
+  path      = each.value.path
+  alphabet  = each.value.alphabet
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_transform_template" "this" {
+  for_each = var.transform_templates
+
+  name           = each.value.name
+  path           = each.value.path
+  type           = each.value.type
+  pattern        = each.value.pattern
+  alphabet       = each.value.alphabet
+  encode_format  = each.value.encode_format
+  decode_formats = each.value.decode_formats
+  namespace      = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_transform_transformation" "this" {
+  for_each = var.transform_transformations
+
+  name              = each.value.name
+  path              = each.value.path
+  type              = each.value.type
+  template          = each.value.template
+  tweak_source      = each.value.tweak_source
+  masking_character = each.value.masking_character
+  allowed_roles     = each.value.allowed_roles
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_transform_role" "this" {
+  for_each = var.transform_roles
+
+  name            = each.value.name
+  path            = each.value.path
+  transformations = each.value.transformations
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
