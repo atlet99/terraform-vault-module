@@ -8,6 +8,7 @@ resource "vault_quota_rate_limit" "this" {
   name           = each.value.name
   path           = each.value.path
   rate           = each.value.rate
+  secondary_rate = each.value.secondary_rate
   interval       = each.value.interval
   block_interval = each.value.block_interval
   role           = each.value.role

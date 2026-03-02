@@ -42,3 +42,6 @@ terraform.rc
 
 # TF Docs
 !.terraform-docs.yml
+
+# Python cache
+*.py

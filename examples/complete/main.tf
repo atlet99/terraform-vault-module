@@ -399,6 +399,147 @@ module "vault" {
       qr_size = 200
     }
   }
+
+  # -- Phase 6: Additional Auth Backends --------------------------------------
+
+  aws_auth_backends = {
+    "aws-prod" = {
+      path                       = "aws"
+      description                = "AWS Auth Backend for Production"
+      iam_server_id_header_value = "vault.example.com"
+      max_retries                = 3
+    }
+  }
+
+  aws_auth_roles = {
+    "ec2-role" = {
+      role                     = "prod-ec2-role"
+      backend                  = "aws"
+      auth_type                = "ec2"
+      bound_ami_ids            = ["ami-0c55b159cbfafe1f0"]
+      bound_account_ids        = ["123456789012"]
+      inferred_entity_type     = "ec2_instance"
+      allow_instance_migration = true
+      token_policies           = ["default", "prod-policy"]
+      token_max_ttl            = 3600
+    }
+    "iam-role" = {
+      role                     = "prod-iam-role"
+      backend                  = "aws"
+      auth_type                = "iam"
+      bound_iam_principal_arns = ["arn:aws:iam::123456789012:role/MyDevRole"]
+      resolve_aws_unique_ids   = false
+      token_policies           = ["default", "dev-policy"]
+      token_ttl                = 1800
+    }
+  }
+
+  azure_auth_backends = {
+    "azure-prod" = {
+      path        = "azure"
+      description = "Azure Auth Backend"
+      tenant_id   = "00000000-0000-0000-0000-000000000000"
+      resource    = "https://management.azure.com/"
+    }
+  }
+
+  azure_auth_roles = {
+    "dev-role" = {
+      role                   = "dev-role"
+      backend                = "azure"
+      bound_subscription_ids = ["00000000-0000-0000-0000-000000000000"]
+      bound_resource_groups  = ["rg-dev"]
+      token_policies         = ["default", "azure-policy"]
+      token_ttl              = 3600
+    }
+  }
+
+  gcp_auth_backends = {
+    "gcp-prod" = {
+      path        = "gcp"
+      description = "GCP Auth Backend"
+    }
+  }
+
+  gcp_auth_roles = {
+    "compute-role" = {
+      role                = "compute-role"
+      backend             = "gcp"
+      type                = "gce"
+      bound_projects      = ["my-gcp-project"]
+      bound_zones         = ["us-central1-a"]
+      token_policies      = ["default", "gcp-policy"]
+      token_ttl           = 3600
+      allow_gce_inference = true
+    }
+  }
+
+  ldap_auth_backends = {
+    "ldap-corp" = {
+      path              = "ldap"
+      description       = "Corporate LDAP Auth Backend"
+      url               = "ldaps://ldap.example.com"
+      userdn            = "ou=Users,dc=example,dc=com"
+      userattr          = "uid"
+      upndomain         = "example.com"
+      discoverdn        = false
+      groupdn           = "ou=Groups,dc=example,dc=com"
+      groupattr         = "cn"
+      username_as_alias = true
+    }
+  }
+
+  ldap_auth_groups = {
+    "engineering" = {
+      groupname = "engineering"
+      backend   = "ldap"
+      policies  = ["engineering-policy", "default"]
+    }
+  }
+
+  okta_auth_backends = {
+    "okta-corp" = {
+      path         = "okta"
+      description  = "Corporate Okta Auth Backend"
+      organization = "example"
+      base_url     = "okta.com"
+    }
+  }
+
+  okta_auth_groups = {
+    "developers" = {
+      group_name = "developers"
+      path       = "okta"
+      policies   = ["developer-policy"]
+    }
+  }
+
+  okta_auth_users = {
+    "john.doe" = {
+      username = "john.doe"
+      path     = "okta"
+      groups   = ["engineers"]
+      policies = ["admin-policy"]
+    }
+  }
+
+  cert_auth_backends = {
+    "cert-prod" = {
+      path        = "cert"
+      description = "TLS Certificate Auth Backend"
+    }
+  }
+
+  cert_auth_roles = {
+    "web-servers" = {
+      name           = "web-servers"
+      backend        = "cert"
+      certificate    = "my-ca-cert-pem-data"
+      allowed_names  = ["web-*.example.com"]
+      token_policies = ["web-policy"]
+      token_ttl      = 3600
+    }
+  }
 }
 
 ###############################################################################
