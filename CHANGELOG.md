@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - [FEATURE] - add AliCloud, OCI, SAML, and SPIFFE auth backend and role support;
+- [FEATURE] - add SAML, SPIFFE, OCI, AliCloud auth backends with full output coverage
+- [FEATURE] - add MFA login enforcement and Sentinel policy support
 
 ### Changed
 
 - [DOCS] - add README for complete module example;
+- Split variables.tf and outputs.tf into thematic files
 
 ## [1.0.2] - 2026-03-02
 

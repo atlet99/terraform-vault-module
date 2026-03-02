@@ -193,3 +193,46 @@ resource "vault_mfa_pingid" "this" {
   settings_file_base64 = each.value.settings_file_base64
   namespace            = each.value.namespace != null ? each.value.namespace : var.namespace
 }
+
+###############################################################################
+# MFA Login Enforcement
+###############################################################################
+
+resource "vault_identity_mfa_login_enforcement" "this" {
+  for_each = var.identity_mfa_login_enforcements
+
+  name                  = each.value.name
+  mfa_method_ids        = each.value.mfa_method_ids
+  auth_method_accessors = each.value.auth_method_accessors
+  auth_method_types     = each.value.auth_method_types
+  identity_entity_ids   = each.value.identity_entity_ids
+  identity_group_ids    = each.value.identity_group_ids
+  namespace             = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Sentinel EGP Policies (Enterprise)
+###############################################################################
+
+resource "vault_egp_policy" "this" {
+  for_each = var.egp_policies
+
+  name              = each.value.name
+  paths             = each.value.paths
+  enforcement_level = each.value.enforcement_level
+  policy            = each.value.policy
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Sentinel RGP Policies (Enterprise)
+###############################################################################
+
+resource "vault_rgp_policy" "this" {
+  for_each = var.rgp_policies
+
+  name              = each.value.name
+  enforcement_level = each.value.enforcement_level
+  policy            = each.value.policy
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
