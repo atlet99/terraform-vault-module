@@ -97,6 +97,25 @@ variable "secrets_sync_gh_destinations" {
   default = {}
 }
 
+variable "secrets_sync_vercel_destinations" {
+  description = "A map of Vercel destinations for secrets sync."
+  type = map(object({
+    name                      = string
+    access_token              = string
+    project_id                = string
+    deployment_environments   = list(string)
+    team_id                   = optional(string)
+    secret_name_template      = optional(string)
+    granularity               = optional(string)
+    allowed_ipv4_addresses    = optional(list(string))
+    allowed_ipv6_addresses    = optional(list(string))
+    allowed_ports             = optional(list(number))
+    disable_strict_networking = optional(bool)
+    namespace                 = optional(string)
+  }))
+  default = {}
+}
+
 variable "secrets_sync_associations" {
   description = "A map of associations between secrets and destinations."
   type = map(object({

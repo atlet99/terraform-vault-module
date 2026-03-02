@@ -179,3 +179,47 @@ variable "password_policies" {
   }))
   default = {}
 }
+
+###############################################################################
+# Raft Storage Management (Vault Enterprise / Raft Storage)
+###############################################################################
+
+variable "raft_autopilot" {
+  description = "Raft autopilot configuration."
+  type = object({
+    cleanup_dead_servers               = optional(bool)
+    dead_server_last_contact_threshold = optional(string)
+    last_contact_threshold             = optional(string)
+    max_trailing_logs                  = optional(number)
+    min_quorum                         = optional(number)
+    server_stabilization_time          = optional(string)
+    disable_upgrade_migration          = optional(bool)
+    namespace                          = optional(string)
+  })
+  default = null
+}
+
+variable "raft_snapshot_agent_configs" {
+  description = "Map of Raft snapshot agent configurations."
+  type = map(object({
+    name                          = string
+    interval_seconds              = number
+    retain                        = optional(number)
+    path_prefix                   = string
+    storage_type                  = string
+    aws_access_key                = optional(string)
+    aws_secret_key                = optional(string)
+    aws_s3_bucket                 = optional(string)
+    aws_s3_region                 = optional(string)
+    aws_s3_endpoint               = optional(string)
+    aws_s3_server_side_encryption = optional(bool)
+    google_service_account_key    = optional(string)
+    google_gcs_bucket             = optional(string)
+    azure_container               = optional(string)
+    azure_account_name            = optional(string)
+    azure_account_key             = optional(string)
+    azure_endpoint                = optional(string)
+    namespace                     = optional(string)
+  }))
+  default = {}
+}

@@ -173,3 +173,17 @@ output "password_policies" {
   description = "Map of password policy keys to their names."
   value       = { for k, v in vault_password_policy.this : k => v.name }
 }
+
+###############################################################################
+# Raft Storage Management
+###############################################################################
+
+output "raft_autopilot" {
+  description = "Raft autopilot configuration ID."
+  value       = var.raft_autopilot != null ? vault_raft_autopilot.this[0].id : null
+}
+
+output "raft_snapshot_agent_configs" {
+  description = "Map of Raft snapshot agent configuration keys to their IDs."
+  value       = { for k, v in vault_raft_snapshot_agent_config.this : k => v.id }
+}

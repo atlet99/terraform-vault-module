@@ -317,3 +317,12 @@ output "transform_transformations" {
     }
   }
 }
+
+###############################################################################
+# Managed Keys
+###############################################################################
+
+output "managed_keys" {
+  description = "The ID of the Managed Keys resource."
+  value       = var.managed_keys != null ? vault_managed_keys.this[0].id : null
+}

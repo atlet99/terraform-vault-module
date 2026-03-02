@@ -38,3 +38,43 @@ resource "vault_namespace" "this" {
   namespace       = each.value.namespace
   custom_metadata = each.value.custom_metadata
 }
+
+###############################################################################
+# Raft Storage Management (Vault Enterprise / Raft Storage)
+###############################################################################
+
+resource "vault_raft_autopilot" "this" {
+  count = var.raft_autopilot != null ? 1 : 0
+
+  cleanup_dead_servers               = var.raft_autopilot.cleanup_dead_servers
+  dead_server_last_contact_threshold = var.raft_autopilot.dead_server_last_contact_threshold
+  last_contact_threshold             = var.raft_autopilot.last_contact_threshold
+  max_trailing_logs                  = var.raft_autopilot.max_trailing_logs
+  min_quorum                         = var.raft_autopilot.min_quorum
+  server_stabilization_time          = var.raft_autopilot.server_stabilization_time
+  disable_upgrade_migration          = var.raft_autopilot.disable_upgrade_migration
+  namespace                          = var.raft_autopilot.namespace != null ? var.raft_autopilot.namespace : var.namespace
+}
+
+resource "vault_raft_snapshot_agent_config" "this" {
+  for_each = var.raft_snapshot_agent_configs
+
+  name                          = each.value.name
+  interval_seconds              = each.value.interval_seconds
+  retain                        = each.value.retain
+  path_prefix                   = each.value.path_prefix
+  storage_type                  = each.value.storage_type
+  aws_access_key_id             = each.value.aws_access_key
+  aws_secret_access_key         = each.value.aws_secret_key
+  aws_s3_bucket                 = each.value.aws_s3_bucket
+  aws_s3_region                 = each.value.aws_s3_region
+  aws_s3_endpoint               = each.value.aws_s3_endpoint
+  aws_s3_server_side_encryption = each.value.aws_s3_server_side_encryption
+  google_service_account_key    = each.value.google_service_account_key
+  google_gcs_bucket             = each.value.google_gcs_bucket
+  azure_container_name          = each.value.azure_container
+  azure_account_name            = each.value.azure_account_name
+  azure_account_key             = each.value.azure_account_key
+  azure_endpoint                = each.value.azure_endpoint
+  namespace                     = each.value.namespace != null ? each.value.namespace : var.namespace
+}

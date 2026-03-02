@@ -87,6 +87,23 @@ resource "vault_secrets_sync_gh_destination" "this" {
   namespace                 = each.value.namespace != null ? each.value.namespace : var.namespace
 }
 
+resource "vault_secrets_sync_vercel_destination" "this" {
+  for_each = var.secrets_sync_vercel_destinations
+
+  name                      = each.value.name
+  access_token              = each.value.access_token
+  project_id                = each.value.project_id
+  deployment_environments   = each.value.deployment_environments
+  team_id                   = each.value.team_id
+  secret_name_template      = each.value.secret_name_template
+  granularity               = each.value.granularity
+  allowed_ipv4_addresses    = each.value.allowed_ipv4_addresses
+  allowed_ipv6_addresses    = each.value.allowed_ipv6_addresses
+  allowed_ports             = each.value.allowed_ports
+  disable_strict_networking = each.value.disable_strict_networking
+  namespace                 = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
 resource "vault_secrets_sync_association" "this" {
   for_each = var.secrets_sync_associations
 
@@ -100,6 +117,7 @@ resource "vault_secrets_sync_association" "this" {
     vault_secrets_sync_aws_destination.this,
     vault_secrets_sync_azure_destination.this,
     vault_secrets_sync_gcp_destination.this,
-    vault_secrets_sync_gh_destination.this
+    vault_secrets_sync_gh_destination.this,
+    vault_secrets_sync_vercel_destination.this
   ]
 }
