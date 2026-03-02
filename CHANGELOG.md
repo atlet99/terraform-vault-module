@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - [FEATURE] - add support for Vault identity entity and group aliases, … (#1)
-- [FEATURE] - add AppRole and JWT/OIDC roles, identity group members, password policies, and transit keys;
+- [FEATURE] - implement common auth methods and secret engines; (#2)
+- [FEATURE] - add database, PKI, AWS, and GitHub backend configurations;
 
 ## [1.0.1] - 2026-03-02
 

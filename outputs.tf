@@ -328,3 +328,65 @@ output "identity_group_memberships" {
     }
   }
 }
+
+# -- Phase 3 Outputs ---------------------------------------------------------
+
+output "database_connections" {
+  description = "Map of Database connection keys to their names and backend paths."
+  value = {
+    for k, v in vault_database_secret_backend_connection.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "database_roles" {
+  description = "Map of Database role keys to their names and backend paths."
+  value = {
+    for k, v in vault_database_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "database_static_roles" {
+  description = "Map of Database static role keys to their names and backend paths."
+  value = {
+    for k, v in vault_database_secret_backend_static_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "pki_roles" {
+  description = "Map of PKI role keys to their names and backend paths."
+  value = {
+    for k, v in vault_pki_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "aws_roles" {
+  description = "Map of AWS role keys to their names and backend paths."
+  value = {
+    for k, v in vault_aws_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "github_auth_backends" {
+  description = "Map of GitHub auth backend keys to their paths and organization."
+  value = {
+    for k, v in vault_github_auth_backend.this : k => {
+      path         = v.path
+      organization = v.organization
+    }
+  }
+}

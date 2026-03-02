@@ -1,3 +1,9 @@
+variable "namespace" {
+  description = "Default Vault Enterprise namespace."
+  type        = string
+  default     = null
+}
+
 ###############################################################################
 # Secrets Engine Mounts
 ###############################################################################
@@ -384,6 +390,127 @@ variable "identity_group_memberships" {
     member_entity_ids = list(string)
     exclusive         = optional(bool, true)
     namespace         = optional(string, null)
+  }))
+  default = {}
+}
+
+# -- Phase 3 Improvements ----------------------------------------------------
+
+variable "database_connections" {
+  description = "Map of Database secret backend connections."
+  type = map(object({
+    name              = string
+    backend           = string
+    allowed_roles     = optional(list(string), null)
+    plugin_name       = optional(string, null)
+    verify_connection = optional(bool, true)
+    namespace         = optional(string, null)
+
+    postgresql = optional(object({
+      connection_url          = string
+      max_open_connections    = optional(number, null)
+      max_idle_connections    = optional(number, null)
+      max_connection_lifetime = optional(number, null)
+      username_template       = optional(string, null)
+    }), null)
+
+    mysql = optional(object({
+      connection_url          = string
+      max_open_connections    = optional(number, null)
+      max_idle_connections    = optional(number, null)
+      max_connection_lifetime = optional(number, null)
+      username_template       = optional(string, null)
+    }), null)
+  }))
+  default = {}
+}
+
+variable "database_roles" {
+  description = "Map of Database secret backend roles (dynamic credentials)."
+  type = map(object({
+    name                  = string
+    backend               = string
+    db_name               = string
+    creation_statements   = list(string)
+    revocation_statements = optional(list(string), null)
+    default_ttl           = optional(number, null)
+    max_ttl               = optional(number, null)
+    namespace             = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "database_static_roles" {
+  description = "Map of Database secret backend static roles."
+  type = map(object({
+    name                = string
+    backend             = string
+    db_name             = string
+    username            = string
+    rotation_period     = number
+    rotation_window     = optional(number, null)
+    rotation_statements = optional(list(string), null)
+    namespace           = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "pki_roles" {
+  description = "Map of PKI secret backend roles."
+  type = map(object({
+    name               = string
+    backend            = string
+    ttl                = optional(string, null)
+    max_ttl            = optional(string, null)
+    allow_localhost    = optional(bool, true)
+    allowed_domains    = optional(list(string), null)
+    allow_bare_domains = optional(bool, false)
+    allow_subdomains   = optional(bool, false)
+    allow_any_name     = optional(bool, false)
+    enforce_hostnames  = optional(bool, true)
+    allow_ip_sans      = optional(bool, true)
+    server_flag        = optional(bool, true)
+    client_flag        = optional(bool, true)
+    key_type           = optional(string, "rsa")
+    key_bits           = optional(number, 2048)
+    no_store           = optional(bool, false)
+    namespace          = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "aws_roles" {
+  description = "Map of AWS secret backend roles."
+  type = map(object({
+    name            = string
+    backend         = string
+    credential_type = string # iam_user, assumed_role, federation_token
+    policy_arns     = optional(list(string), null)
+    policy_document = optional(string, null)
+    role_arns       = optional(list(string), null)
+    default_sts_ttl = optional(number, null)
+    max_sts_ttl     = optional(number, null)
+    iam_groups      = optional(list(string), null)
+    namespace       = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "github_auth_backends" {
+  description = "Map of GitHub auth backend configurations (organization settings)."
+  type = map(object({
+    path            = string
+    organization    = string
+    organization_id = optional(number, null)
+    base_url        = optional(string, null)
+    description     = optional(string, null)
+    namespace       = optional(string, null)
+    tune = optional(object({
+      default_lease_ttl  = optional(string, null)
+      max_lease_ttl      = optional(string, null)
+      listing_visibility = optional(string, null)
+      token_type         = optional(string, null)
+    }), null)
   }))
   default = {}
 }

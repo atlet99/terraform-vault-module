@@ -224,6 +224,69 @@ module "vault" {
     }
   }
 
+  # -- Database Connections (Phase 3) -----------------------------------------
+
+  database_connections = {
+    postgres = {
+      name    = "postgres"
+      backend = "database"
+      postgresql = {
+        connection_url = "postgresql://{{username}}:{{password}}@localhost:5432/postgres"
+      }
+    }
+  }
+
+  database_roles = {
+    readonly = {
+      name                = "readonly"
+      backend             = "database"
+      db_name             = "postgres"
+      creation_statements = ["CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '{{password}}' VALID UNTIL '{{expiration}}'; GRANT SELECT ON ALL TABLES IN SCHEMA public TO \"{{name}}\";"]
+    }
+  }
+
+  database_static_roles = {
+    app_user = {
+      name            = "app-user"
+      backend         = "database"
+      db_name         = "postgres"
+      username        = "app_service"
+      rotation_period = 86400
+    }
+  }
+
+  # -- PKI Roles (Phase 3) ----------------------------------------------------
+
+  pki_roles = {
+    internal_tls = {
+      name             = "internal-tls"
+      backend          = "pki"
+      allow_subdomains = true
+      allowed_domains  = ["internal.example.com"]
+      ttl              = "24h"
+    }
+  }
+
+  # -- AWS Roles (Phase 3) ----------------------------------------------------
+
+  aws_roles = {
+    lambda_sqs = {
+      name            = "lambda-sqs"
+      backend         = "aws"
+      credential_type = "iam_user"
+      policy_arns     = ["arn:aws:iam::aws:policy/AmazonSQSFullAccess"]
+    }
+  }
+
+  # -- GitHub Auth (Phase 3) --------------------------------------------------
+
+  github_auth_backends = {
+    main = {
+      path         = "github"
+      organization = "example-org"
+    }
+  }
+
   # -- Identity Entities ------------------------------------------------------
 
   identity_entities = {
@@ -321,4 +384,24 @@ output "transit_keys" {
 
 output "password_policies" {
   value = module.vault.password_policies
+}
+
+output "database_connections" {
+  value = module.vault.database_connections
+}
+
+output "database_roles" {
+  value = module.vault.database_roles
+}
+
+output "pki_roles" {
+  value = module.vault.pki_roles
+}
+
+output "aws_roles" {
+  value = module.vault.aws_roles
+}
+
+output "github_auth_backends" {
+  value = module.vault.github_auth_backends
 }
