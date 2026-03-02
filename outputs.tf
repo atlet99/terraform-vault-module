@@ -486,3 +486,128 @@ output "alicloud_auth_backends" {
   description = "Map of AliCloud auth backend keys to their paths."
   value       = { for k, v in vault_auth_backend.alicloud : k => v.path }
 }
+
+###############################################################################
+# Role outputs for new secret engines and auth backends
+###############################################################################
+
+output "consul_secret_roles" {
+  description = "Map of Consul secret role keys to their names and backend paths."
+  value = {
+    for k, v in vault_consul_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "nomad_secret_roles" {
+  description = "Map of Nomad secret role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_nomad_secret_role.this : k => {
+      role    = v.role
+      backend = v.backend
+    }
+  }
+}
+
+output "mongodbatlas_secret_roles" {
+  description = "Map of MongoDB Atlas secret role keys to their names and mount paths."
+  value = {
+    for k, v in vault_mongodbatlas_secret_role.this : k => {
+      name  = v.name
+      mount = v.mount
+    }
+  }
+}
+
+output "rabbitmq_secret_roles" {
+  description = "Map of RabbitMQ secret role keys to their names and backend paths."
+  value = {
+    for k, v in vault_rabbitmq_secret_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "terraform_cloud_secret_roles" {
+  description = "Map of Terraform Cloud secret role keys to their names and backend paths."
+  value = {
+    for k, v in vault_terraform_cloud_secret_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "kmip_secret_roles" {
+  description = "Map of KMIP secret role keys to their roles and paths."
+  value = {
+    for k, v in vault_kmip_secret_role.this : k => {
+      role  = v.role
+      path  = v.path
+      scope = v.scope
+    }
+  }
+}
+
+output "kmip_secret_scopes" {
+  description = "Map of KMIP secret scope keys to their scope names and paths."
+  value = {
+    for k, v in vault_kmip_secret_scope.this : k => {
+      scope = v.scope
+      path  = v.path
+    }
+  }
+}
+
+output "transform_roles" {
+  description = "Map of Transform role keys to their names and paths."
+  value = {
+    for k, v in vault_transform_role.this : k => {
+      name = v.name
+      path = v.path
+    }
+  }
+}
+
+output "saml_auth_roles" {
+  description = "Map of SAML auth role keys to their names and backend paths."
+  value = {
+    for k, v in vault_saml_auth_backend_role.this : k => {
+      name = v.name
+      path = v.path
+    }
+  }
+}
+
+output "spiffe_auth_roles" {
+  description = "Map of SPIFFE auth role keys to their names and mount paths."
+  value = {
+    for k, v in vault_spiffe_auth_backend_role.this : k => {
+      name  = v.name
+      mount = v.mount
+    }
+  }
+}
+
+output "oci_auth_roles" {
+  description = "Map of OCI auth role keys to their names and backend paths."
+  value = {
+    for k, v in vault_oci_auth_backend_role.this : k => {
+      name    = v.name
+      backend = v.backend
+    }
+  }
+}
+
+output "alicloud_auth_roles" {
+  description = "Map of AliCloud auth role keys to their role names and backend paths."
+  value = {
+    for k, v in vault_alicloud_auth_backend_role.this : k => {
+      role    = v.role
+      backend = v.backend
+    }
+  }
+}

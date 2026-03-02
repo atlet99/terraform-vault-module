@@ -311,6 +311,7 @@ module "vault" {
 | Name | Description |
 |------|-------------|
 | <a name="output_alicloud_auth_backends"></a> [alicloud\_auth\_backends](#output\_alicloud\_auth\_backends) | Map of AliCloud auth backend keys to their paths. |
+| <a name="output_alicloud_auth_roles"></a> [alicloud\_auth\_roles](#output\_alicloud\_auth\_roles) | Map of AliCloud auth role keys to their role names and backend paths. |
 | <a name="output_approle_auth_roles"></a> [approle\_auth\_roles](#output\_approle\_auth\_roles) | Map of AppRole auth role keys to their role names, role IDs, and backend paths. |
 | <a name="output_audit_device_paths"></a> [audit\_device\_paths](#output\_audit\_device\_paths) | Map of audit device keys to their paths. |
 | <a name="output_audit_devices"></a> [audit\_devices](#output\_audit\_devices) | Full audit device objects keyed by variable key. Contains path, type, and id. |
@@ -320,6 +321,7 @@ module "vault" {
 | <a name="output_aws_roles"></a> [aws\_roles](#output\_aws\_roles) | Map of AWS role keys to their names and backend paths. |
 | <a name="output_azure_secret_backends"></a> [azure\_secret\_backends](#output\_azure\_secret\_backends) | Map of Azure secret backend keys to their paths. |
 | <a name="output_consul_secret_backends"></a> [consul\_secret\_backends](#output\_consul\_secret\_backends) | Map of Consul secret backend keys to their paths. |
+| <a name="output_consul_secret_roles"></a> [consul\_secret\_roles](#output\_consul\_secret\_roles) | Map of Consul secret role keys to their names and backend paths. |
 | <a name="output_database_connections"></a> [database\_connections](#output\_database\_connections) | Map of Database connection keys to their names and backend paths. |
 | <a name="output_database_roles"></a> [database\_roles](#output\_database\_roles) | Map of Database role keys to their names and backend paths. |
 | <a name="output_database_static_roles"></a> [database\_static\_roles](#output\_database\_static\_roles) | Map of Database static role keys to their names and backend paths. |
@@ -338,6 +340,8 @@ module "vault" {
 | <a name="output_identity_oidc_providers"></a> [identity\_oidc\_providers](#output\_identity\_oidc\_providers) | Map of Identity OIDC provider keys to their names. |
 | <a name="output_jwt_oidc_auth_roles"></a> [jwt\_oidc\_auth\_roles](#output\_jwt\_oidc\_auth\_roles) | Map of JWT/OIDC auth role keys to their role names and backend paths. |
 | <a name="output_kmip_secret_backends"></a> [kmip\_secret\_backends](#output\_kmip\_secret\_backends) | Map of KMIP secret backend keys to their paths. |
+| <a name="output_kmip_secret_roles"></a> [kmip\_secret\_roles](#output\_kmip\_secret\_roles) | Map of KMIP secret role keys to their roles and paths. |
+| <a name="output_kmip_secret_scopes"></a> [kmip\_secret\_scopes](#output\_kmip\_secret\_scopes) | Map of KMIP secret scope keys to their scope names and paths. |
 | <a name="output_kubernetes_auth_backend_accessors"></a> [kubernetes\_auth\_backend\_accessors](#output\_kubernetes\_auth\_backend\_accessors) | Map of Kubernetes auth backend keys to their accessors. |
 | <a name="output_kubernetes_auth_backend_paths"></a> [kubernetes\_auth\_backend\_paths](#output\_kubernetes\_auth\_backend\_paths) | Map of Kubernetes auth backend keys to their paths. |
 | <a name="output_kubernetes_auth_backends"></a> [kubernetes\_auth\_backends](#output\_kubernetes\_auth\_backends) | Full Kubernetes auth backend objects keyed by variable key. Contains path, accessor, and id. |
@@ -347,6 +351,7 @@ module "vault" {
 | <a name="output_kv_secrets_v2"></a> [kv\_secrets\_v2](#output\_kv\_secrets\_v2) | Full KV-V2 secret objects keyed by variable key. Contains path, mount, and name. |
 | <a name="output_ldap_secret_backends"></a> [ldap\_secret\_backends](#output\_ldap\_secret\_backends) | Map of LDAP secret backend keys to their paths. |
 | <a name="output_mongodbatlas_secret_backends"></a> [mongodbatlas\_secret\_backends](#output\_mongodbatlas\_secret\_backends) | Map of MongoDB Atlas secret backend keys to their mount paths. |
+| <a name="output_mongodbatlas_secret_roles"></a> [mongodbatlas\_secret\_roles](#output\_mongodbatlas\_secret\_roles) | Map of MongoDB Atlas secret role keys to their names and mount paths. |
 | <a name="output_mount_accessors"></a> [mount\_accessors](#output\_mount\_accessors) | Map of mount keys to their accessors. |
 | <a name="output_mount_paths"></a> [mount\_paths](#output\_mount\_paths) | Map of mount keys to their paths. |
 | <a name="output_mounts"></a> [mounts](#output\_mounts) | Full mount objects keyed by variable key. Contains path, accessor, type, and description. |
@@ -354,7 +359,9 @@ module "vault" {
 | <a name="output_namespace_paths"></a> [namespace\_paths](#output\_namespace\_paths) | Map of namespace keys to their fully qualified paths. |
 | <a name="output_namespaces"></a> [namespaces](#output\_namespaces) | Full namespace objects keyed by variable key. Contains path, path\_fq, namespace\_id, and id. |
 | <a name="output_nomad_secret_backends"></a> [nomad\_secret\_backends](#output\_nomad\_secret\_backends) | Map of Nomad secret backend keys to their paths. |
+| <a name="output_nomad_secret_roles"></a> [nomad\_secret\_roles](#output\_nomad\_secret\_roles) | Map of Nomad secret role keys to their role names and backend paths. |
 | <a name="output_oci_auth_backends"></a> [oci\_auth\_backends](#output\_oci\_auth\_backends) | Map of OCI auth backend keys to their paths. |
+| <a name="output_oci_auth_roles"></a> [oci\_auth\_roles](#output\_oci\_auth\_roles) | Map of OCI auth role keys to their names and backend paths. |
 | <a name="output_password_policies"></a> [password\_policies](#output\_password\_policies) | Map of password policy keys to their names. |
 | <a name="output_pki_roles"></a> [pki\_roles](#output\_pki\_roles) | Map of PKI role keys to their names and backend paths. |
 | <a name="output_policies"></a> [policies](#output\_policies) | Full policy objects keyed by variable key. Contains name and id. |
@@ -362,11 +369,16 @@ module "vault" {
 | <a name="output_quota_lease_counts"></a> [quota\_lease\_counts](#output\_quota\_lease\_counts) | Map of lease count quota keys to their names. |
 | <a name="output_quota_rate_limits"></a> [quota\_rate\_limits](#output\_quota\_rate\_limits) | Map of rate limit quota keys to their names. |
 | <a name="output_rabbitmq_secret_backends"></a> [rabbitmq\_secret\_backends](#output\_rabbitmq\_secret\_backends) | Map of RabbitMQ secret backend keys to their paths. |
+| <a name="output_rabbitmq_secret_roles"></a> [rabbitmq\_secret\_roles](#output\_rabbitmq\_secret\_roles) | Map of RabbitMQ secret role keys to their names and backend paths. |
 | <a name="output_saml_auth_backends"></a> [saml\_auth\_backends](#output\_saml\_auth\_backends) | Map of SAML auth backend keys to their paths. |
+| <a name="output_saml_auth_roles"></a> [saml\_auth\_roles](#output\_saml\_auth\_roles) | Map of SAML auth role keys to their names and backend paths. |
 | <a name="output_secrets_sync_config"></a> [secrets\_sync\_config](#output\_secrets\_sync\_config) | Secrets sync configuration. |
 | <a name="output_spiffe_auth_backends"></a> [spiffe\_auth\_backends](#output\_spiffe\_auth\_backends) | Map of SPIFFE auth backend keys to their paths. |
+| <a name="output_spiffe_auth_roles"></a> [spiffe\_auth\_roles](#output\_spiffe\_auth\_roles) | Map of SPIFFE auth role keys to their names and mount paths. |
 | <a name="output_terraform_cloud_secret_backends"></a> [terraform\_cloud\_secret\_backends](#output\_terraform\_cloud\_secret\_backends) | Map of Terraform Cloud secret backend keys to their paths. |
+| <a name="output_terraform_cloud_secret_roles"></a> [terraform\_cloud\_secret\_roles](#output\_terraform\_cloud\_secret\_roles) | Map of Terraform Cloud secret role keys to their names and backend paths. |
 | <a name="output_transform_alphabets"></a> [transform\_alphabets](#output\_transform\_alphabets) | Map of Transform alphabet keys to their names. |
+| <a name="output_transform_roles"></a> [transform\_roles](#output\_transform\_roles) | Map of Transform role keys to their names and paths. |
 | <a name="output_transit_keys"></a> [transit\_keys](#output\_transit\_keys) | Map of Transit key keys to their names and backend paths. |
 <!-- END_TF_DOCS -->
 
