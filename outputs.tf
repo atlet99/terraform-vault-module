@@ -390,3 +390,40 @@ output "github_auth_backends" {
     }
   }
 }
+
+# -- Phase 5 Outputs ---------------------------------------------------------
+
+output "azure_secret_backends" {
+  description = "Map of Azure secret backend keys to their paths."
+  value       = { for k, v in vault_azure_secret_backend.this : k => v.path }
+}
+
+output "gcp_secret_backends" {
+  description = "Map of GCP secret backend keys to their paths."
+  value       = { for k, v in vault_gcp_secret_backend.this : k => v.path }
+}
+
+output "ldap_secret_backends" {
+  description = "Map of LDAP secret backend keys to their paths."
+  value       = { for k, v in vault_ldap_secret_backend.this : k => v.path }
+}
+
+output "secrets_sync_config" {
+  description = "Secrets sync configuration."
+  value       = vault_secrets_sync_config.this
+}
+
+output "quota_rate_limits" {
+  description = "Map of rate limit quota keys to their names."
+  value       = { for k, v in vault_quota_rate_limit.this : k => v.name }
+}
+
+output "quota_lease_counts" {
+  description = "Map of lease count quota keys to their names."
+  value       = { for k, v in vault_quota_lease_count.this : k => v.name }
+}
+
+output "identity_oidc_providers" {
+  description = "Map of Identity OIDC provider keys to their names."
+  value       = { for k, v in vault_identity_oidc_provider.this : k => v.name }
+}

@@ -209,3 +209,182 @@ resource "vault_kv_secret_v2" "this" {
     }
   }
 }
+
+###############################################################################
+# Azure Secret Backend (Phase 5)
+###############################################################################
+
+resource "vault_azure_secret_backend" "this" {
+  for_each = var.azure_secret_backends
+
+  path            = each.value.path
+  description     = each.value.description
+  subscription_id = each.value.subscription_id
+  tenant_id       = each.value.tenant_id
+  client_id       = each.value.client_id
+  client_secret   = each.value.client_secret
+  environment     = each.value.environment
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_azure_secret_backend_role" "this" {
+  for_each = var.azure_secret_backend_roles
+
+  role                  = each.value.role
+  backend               = each.value.backend
+  application_object_id = each.value.application_object_id
+  ttl                   = each.value.ttl
+  max_ttl               = each.value.max_ttl
+  permanently_delete    = each.value.permanently_delete
+  namespace             = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "azure_roles" {
+    for_each = each.value.azure_roles != null ? each.value.azure_roles : []
+    content {
+      role_name = azure_roles.value.role_name
+      scope     = azure_roles.value.scope
+    }
+  }
+
+  dynamic "azure_groups" {
+    for_each = each.value.azure_groups != null ? each.value.azure_groups : []
+    content {
+      group_name = azure_groups.value.group_name
+    }
+  }
+}
+
+###############################################################################
+# GCP Secret Backend (Phase 5)
+###############################################################################
+
+resource "vault_gcp_secret_backend" "this" {
+  for_each = var.gcp_secret_backends
+
+  path                      = each.value.path
+  description               = each.value.description
+  credentials               = each.value.credentials
+  default_lease_ttl_seconds = each.value.default_lease_ttl_seconds
+  max_lease_ttl_seconds     = each.value.max_lease_ttl_seconds
+  namespace                 = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_gcp_secret_roleset" "this" {
+  for_each = var.gcp_secret_backend_rolesets
+
+  roleset      = each.value.roleset
+  backend      = each.value.backend
+  project      = each.value.project
+  secret_type  = each.value.secret_type
+  token_scopes = each.value.token_scopes
+  namespace    = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "binding" {
+    for_each = each.value.bindings
+    content {
+      resource = binding.value.resource
+      roles    = binding.value.roles
+    }
+  }
+}
+
+resource "vault_gcp_secret_static_account" "this" {
+  for_each = var.gcp_secret_backend_static_accounts
+
+  static_account        = each.value.static_account
+  backend               = each.value.backend
+  service_account_email = each.value.service_account_email
+  secret_type           = each.value.secret_type
+  token_scopes          = each.value.token_scopes
+  namespace             = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "binding" {
+    for_each = each.value.bindings != null ? each.value.bindings : []
+    content {
+      resource = binding.value.resource
+      roles    = binding.value.roles
+    }
+  }
+}
+
+###############################################################################
+# LDAP Secret Backend (Phase 5 - supersedes AD)
+###############################################################################
+
+resource "vault_ldap_secret_backend" "this" {
+  for_each = var.ldap_secret_backends
+
+  path                = each.value.path
+  description         = each.value.description
+  binddn              = each.value.binddn
+  bindpass            = each.value.bindpass
+  bindpass_wo         = each.value.bindpass_wo
+  bindpass_wo_version = each.value.bindpass_wo_version
+  url                 = each.value.url
+  userdn              = each.value.userdn
+  userattr            = each.value.userattr
+  upndomain           = each.value.upndomain
+  insecure_tls        = each.value.insecure_tls
+  starttls            = each.value.starttls
+  certificate         = each.value.certificate
+  client_tls_cert     = each.value.client_tls_cert
+  client_tls_key      = each.value.client_tls_key
+  password_policy     = each.value.password_policy
+  schema              = each.value.schema
+  connection_timeout  = each.value.connection_timeout
+  request_timeout     = each.value.request_timeout
+  credential_type     = each.value.credential_type
+  namespace           = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_ldap_secret_backend_library_set" "this" {
+  for_each = var.ldap_secret_backend_library_sets
+
+  name                         = each.value.name
+  mount                        = each.value.mount
+  service_account_names        = each.value.service_account_names
+  ttl                          = each.value.ttl
+  max_ttl                      = each.value.max_ttl
+  disable_check_in_enforcement = each.value.disable_check_in_enforcement
+  namespace                    = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_ldap_secret_backend_static_role" "this" {
+  for_each = var.ldap_secret_backend_static_roles
+
+  role_name            = each.value.role_name
+  mount                = each.value.mount
+  username             = each.value.username
+  dn                   = each.value.dn
+  rotation_period      = each.value.rotation_period
+  skip_import_rotation = each.value.skip_import_rotation
+  namespace            = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# PKI ACME support (Phase 5)
+###############################################################################
+
+resource "vault_pki_secret_backend_config_acme" "this" {
+  for_each = var.pki_secret_backend_config_acmes
+
+  backend                  = each.value.backend
+  enabled                  = each.value.enabled
+  default_directory_policy = each.value.default_directory_policy
+  allowed_roles            = each.value.allowed_roles
+  allow_role_ext_key_usage = each.value.allow_role_ext_key_usage
+  allowed_issuers          = each.value.allowed_issuers
+  eab_policy               = each.value.eab_policy
+  dns_resolver             = each.value.dns_resolver
+  max_ttl                  = each.value.max_ttl
+  namespace                = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_pki_secret_backend_acme_eab" "this" {
+  for_each = var.pki_secret_backend_acme_eabs
+
+  backend   = each.value.backend
+  issuer    = each.value.issuer
+  role      = each.value.role
+  namespace = each.value.namespace != null ? each.value.namespace : var.namespace
+}
