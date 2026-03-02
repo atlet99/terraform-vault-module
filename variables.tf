@@ -1378,3 +1378,272 @@ variable "pki_secret_backend_acme_eabs" {
   }))
   default = {}
 }
+
+###############################################################################
+# Additional Secret Engines (Consul, Nomad, External PaaS, KMIP, Transform)
+###############################################################################
+
+# Consul
+variable "consul_secret_backends" {
+  description = "A map of Consul secret backends to configure."
+  type = map(object({
+    path                      = optional(string, "consul")
+    description               = optional(string, "Consul secret backend")
+    address                   = string
+    scheme                    = optional(string)
+    token                     = string
+    namespace                 = optional(string)
+    default_lease_ttl_seconds = optional(number)
+    max_lease_ttl_seconds     = optional(number)
+  }))
+  default = {}
+}
+
+variable "consul_secret_roles" {
+  description = "A map of roles for Consul secret backends."
+  type = map(object({
+    name               = string
+    backend            = string
+    policies           = optional(list(string))
+    consul_namespace   = optional(string)
+    consul_roles       = optional(list(string))
+    partition          = optional(string)
+    node_identities    = optional(list(string))
+    service_identities = optional(list(string))
+    ttl                = optional(number)
+    max_ttl            = optional(number)
+    namespace          = optional(string)
+  }))
+  default = {}
+}
+
+# Nomad
+variable "nomad_secret_backends" {
+  description = "A map of Nomad secret backends to configure."
+  type = map(object({
+    path                      = optional(string, "nomad")
+    description               = optional(string, "Nomad secret backend")
+    address                   = string
+    token                     = string
+    max_token_name_length     = optional(number)
+    namespace                 = optional(string)
+    default_lease_ttl_seconds = optional(number)
+    max_lease_ttl_seconds     = optional(number)
+  }))
+  default = {}
+}
+
+variable "nomad_secret_roles" {
+  description = "A map of roles for Nomad secret backends."
+  type = map(object({
+    role      = string
+    backend   = string
+    policies  = optional(list(string))
+    global    = optional(bool)
+    type      = optional(string)
+    namespace = optional(string)
+  }))
+  default = {}
+}
+
+# MongoDB Atlas
+variable "mongodbatlas_secret_backends" {
+  description = "A map of MongoDB Atlas secret backends to configure."
+  type = map(object({
+    path        = optional(string, "mongodbatlas")
+    description = optional(string, "MongoDB Atlas secret backend")
+    private_key = string
+    public_key  = string
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+variable "mongodbatlas_secret_roles" {
+  description = "A map of roles for MongoDB Atlas secret backends."
+  type = map(object({
+    name            = string
+    mount           = string
+    organization_id = optional(string)
+    project_id      = optional(string)
+    roles           = list(string)
+    project_roles   = optional(list(string))
+    ip_addresses    = optional(string)
+    cidr_blocks     = optional(string)
+    ttl             = optional(string)
+    max_ttl         = optional(string)
+    namespace       = optional(string)
+  }))
+  default = {}
+}
+
+# RabbitMQ
+variable "rabbitmq_secret_backends" {
+  description = "A map of RabbitMQ secret backends to configure."
+  type = map(object({
+    path              = optional(string, "rabbitmq")
+    description       = optional(string, "RabbitMQ secret backend")
+    connection_uri    = string
+    username          = string
+    password          = string
+    verify_connection = optional(bool)
+    namespace         = optional(string)
+  }))
+  default = {}
+}
+
+variable "rabbitmq_secret_roles" {
+  description = "A map of roles for RabbitMQ secret backends."
+  type = map(object({
+    name    = string
+    backend = string
+    tags    = optional(string)
+    vhost = optional(map(object({
+      configure = string
+      read      = string
+      write     = string
+    })))
+    vhost_topics = optional(map(map(object({
+      read  = string
+      write = string
+    }))))
+    namespace = optional(string)
+  }))
+  default = {}
+}
+
+# Terraform Cloud
+variable "terraform_cloud_secret_backends" {
+  description = "A map of Terraform Cloud secret backends to configure."
+  type = map(object({
+    path        = optional(string, "terraform")
+    description = optional(string, "Terraform Cloud secret backend")
+    token       = string
+    address     = optional(string)
+    base_path   = optional(string)
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+variable "terraform_cloud_secret_roles" {
+  description = "A map of roles for Terraform Cloud secret backends."
+  type = map(object({
+    name         = string
+    backend      = string
+    organization = optional(string)
+    team_id      = optional(string)
+    user_id      = optional(string)
+    ttl          = optional(number)
+    max_ttl      = optional(number)
+    namespace    = optional(string)
+  }))
+  default = {}
+}
+
+# KMIP
+variable "kmip_secret_backends" {
+  description = "A map of KMIP secret backends to configure."
+  type = map(object({
+    path                        = string
+    description                 = optional(string, "KMIP secret backend")
+    listen_addrs                = optional(list(string))
+    tls_ca_key_type             = optional(string)
+    tls_ca_key_bits             = optional(number)
+    tls_min_version             = optional(string)
+    server_hostnames            = optional(list(string))
+    server_ips                  = optional(list(string))
+    default_tls_client_key_type = optional(string)
+    default_tls_client_key_bits = optional(number)
+    default_tls_client_ttl      = optional(number)
+    namespace                   = optional(string)
+  }))
+  default = {}
+}
+
+variable "kmip_secret_roles" {
+  description = "A map of roles for KMIP secret backends."
+  type = map(object({
+    role                        = string
+    path                        = string
+    scope                       = string
+    tls_client_key_type         = optional(string)
+    tls_client_key_bits         = optional(number)
+    tls_client_ttl              = optional(number)
+    operation_all               = optional(bool)
+    operation_activate          = optional(bool)
+    operation_create            = optional(bool)
+    operation_get               = optional(bool)
+    operation_get_attributes    = optional(bool)
+    operation_destroy           = optional(bool)
+    operation_discover_versions = optional(bool)
+    operation_register          = optional(bool)
+    operation_revoke            = optional(bool)
+    namespace                   = optional(string)
+  }))
+  default = {}
+}
+
+variable "kmip_secret_scopes" {
+  description = "A map of scopes for KMIP secret backends."
+  type = map(object({
+    scope     = string
+    path      = string
+    force     = optional(bool)
+    namespace = optional(string)
+  }))
+  default = {}
+}
+
+# Transform Engine
+variable "transform_alphabets" {
+  description = "A map of alphabets for Transform secret backends."
+  type = map(object({
+    name      = string
+    path      = string
+    alphabet  = string
+    namespace = optional(string)
+  }))
+  default = {}
+}
+
+variable "transform_templates" {
+  description = "A map of templates for Transform secret backends."
+  type = map(object({
+    name           = string
+    path           = string
+    type           = optional(string, "regex")
+    pattern        = optional(string)
+    alphabet       = optional(string)
+    encode_format  = optional(string)
+    decode_formats = optional(map(string))
+    namespace      = optional(string)
+  }))
+  default = {}
+}
+
+variable "transform_transformations" {
+  description = "A map of transformations for Transform secret backends."
+  type = map(object({
+    name              = string
+    path              = string
+    type              = optional(string, "fpe")
+    template          = optional(string)
+    tweak_source      = optional(string, "supplied")
+    masking_character = optional(string)
+    allowed_roles     = optional(list(string))
+    namespace         = optional(string)
+  }))
+  default = {}
+}
+
+variable "transform_roles" {
+  description = "A map of roles for Transform secret backends."
+  type = map(object({
+    name            = string
+    path            = string
+    transformations = optional(list(string))
+    namespace       = optional(string)
+  }))
+  default = {}
+}
