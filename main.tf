@@ -24,6 +24,7 @@ resource "vault_mount" "this" {
   delegated_auth_accessors     = each.value.delegated_auth_accessors
   plugin_version               = each.value.plugin_version
   identity_token_key           = each.value.identity_token_key
+  force_no_cache               = each.value.force_no_cache
 }
 
 ###############################################################################
@@ -108,6 +109,8 @@ resource "vault_kubernetes_auth_backend_config" "this" {
   disable_local_ca_jwt              = each.value.disable_local_ca_jwt
   pem_keys                          = each.value.pem_keys
   use_annotations_as_alias_metadata = each.value.use_annotations_as_alias_metadata
+  token_reviewer_jwt_wo             = each.value.token_reviewer_jwt_wo
+  token_reviewer_jwt_wo_version     = each.value.token_reviewer_jwt_wo_version
 }
 
 locals {
@@ -244,4 +247,27 @@ resource "vault_identity_group" "this" {
   external_member_entity_ids = each.value.external_member_entity_ids
   external_member_group_ids  = each.value.external_member_group_ids
   namespace                  = each.value.namespace
+}
+
+###############################################################################
+# Identity Aliases
+###############################################################################
+
+resource "vault_identity_entity_alias" "this" {
+  for_each = var.identity_entity_aliases
+
+  name            = each.value.name
+  mount_accessor  = each.value.mount_accessor
+  canonical_id    = each.value.canonical_id
+  custom_metadata = each.value.custom_metadata
+  namespace       = each.value.namespace
+}
+
+resource "vault_identity_group_alias" "this" {
+  for_each = var.identity_group_aliases
+
+  name           = each.value.name
+  mount_accessor = each.value.mount_accessor
+  canonical_id   = each.value.canonical_id
+  namespace      = each.value.namespace
 }
