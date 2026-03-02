@@ -29,6 +29,9 @@ This `docs/` directory is structured to guide you through different operational 
    - Managed Keys (External KMS integration)
    - Raft Storage Autopilot
 
+5. **[Practical Scenarios](./guides/scenario_selfhosted_raft_ldap.md)**
+   - [Deploying Self-Hosted Vault with Raft Storage and LDAP Auth](./guides/scenario_selfhosted_raft_ldap.md)
+
 ## 🚀 Getting Started
 
 To see a complete, fully-featured deployment of all these capabilities, refer to the **[`examples/complete`](../examples/complete)** directory.

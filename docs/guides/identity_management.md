@@ -12,7 +12,8 @@ If a user logs in via GitHub and OIDC, mapping aliases for both to a single Enti
 
 ```hcl
 module "vault_identity" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   identity_entities = {
     john_doe = {
@@ -35,7 +36,8 @@ _Note: The module currently supports creating entities. Alias mapping might requ
 
 ```hcl
 module "vault_groups" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   identity_groups = {
     engineering_team = {
@@ -63,7 +65,8 @@ Vault supports nested groups (a group as a member of another group). This is use
 
 ```hcl
 module "vault_nested_groups" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   identity_groups = {
     all_employees = {
@@ -94,7 +97,8 @@ When using OIDC or LDAP, Vault can automatically map groups provided by the Iden
 
 ```hcl
 module "vault_external_groups" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   identity_groups = {
     okta_dev_group = {

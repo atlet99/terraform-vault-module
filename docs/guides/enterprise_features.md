@@ -8,7 +8,8 @@ Managed Keys allow Vault Enterprise to delegate cryptographic operations to an e
 
 ```hcl
 module "vault_managed_keys" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   managed_keys = {
     aws = [
@@ -36,7 +37,8 @@ Secrets Sync allows Vault Enterprise to push centralized secrets to external sec
 
 ```hcl
 module "vault_secrets_sync" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   secrets_sync_config = {
     disabled       = false
@@ -86,7 +88,8 @@ Namespaces allow Vault Enterprise to provide isolated environments (tenants) wit
 
 ```hcl
 module "vault_namespaces" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   namespaces = {
     team_a = {
@@ -107,7 +110,8 @@ Vault's Integrated Storage (Raft) is highly available. Autopilot automates serve
 
 ```hcl
 module "vault_raft" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   raft_autopilot = {
     cleanup_dead_servers               = true

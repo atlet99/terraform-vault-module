@@ -8,7 +8,8 @@ The KV Secrets Engine (Version 2) stores arbitrary key/value secrets. It support
 
 ```hcl
 module "vault_kv" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   mounts = {
     kv = {
@@ -47,7 +48,8 @@ Dynamic secrets are generated on-demand and are unique to the client that reques
 
 ```hcl
 module "vault_db" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   mounts = {
     database = {
@@ -88,7 +90,8 @@ The Transit Secrets Engine handles cryptographic functions on data in-transit. V
 
 ```hcl
 module "vault_transit" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   mounts = {
     transit = {
@@ -114,7 +117,8 @@ The PKI Secrets Engine allows Vault to act as an internal Certificate Authority 
 
 ```hcl
 module "vault_pki" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   mounts = {
     pki_root = {

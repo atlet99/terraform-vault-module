@@ -10,7 +10,8 @@ AppRole is designed for machine-to-machine authentication. It requires a `role_i
 
 ```hcl
 module "vault" {
-  source = "git::https://github.com/example/terraform-vault-module.git"
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   auth_backends = {
     approle = {
@@ -35,7 +36,8 @@ Kubernetes auth allows pods to authenticate with Vault using their Service Accou
 
 ```hcl
 module "vault_k8s" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   kubernetes_auth_backends = {
     primary = {
@@ -64,7 +66,8 @@ AWS Auth allows AWS IAM principals (users or roles) to authenticate with Vault.
 
 ```hcl
 module "vault_aws" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   aws_auth_backends = {
     us_east_1 = {
@@ -90,7 +93,8 @@ OIDC auth allows users to log in using an external identity provider (IdP) like 
 
 ```hcl
 module "vault_oidc" {
-  source = "..."
+  source = "atlet99/module/vault"
+  version = "~> 1.0.2"
 
   jwt_oidc_auth_backends = {
     okta = {
