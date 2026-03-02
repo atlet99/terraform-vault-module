@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [DOCS] - add README for complete module example;
 - Split variables.tf and outputs.tf into thematic files
 - [DOCS] - add self-hosted Vault Raft/LDAP guide and update module source examples;
+- Release v1.0.3
 
 ### Fixed
 
