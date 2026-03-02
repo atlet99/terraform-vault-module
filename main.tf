@@ -382,5 +382,137 @@ resource "vault_identity_group_member_entity_ids" "this" {
   group_id          = each.value.group_id
   member_entity_ids = each.value.member_entity_ids
   exclusive         = each.value.exclusive
-  namespace         = each.value.namespace
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# Database Secret Backend (Phase 3)
+###############################################################################
+
+resource "vault_database_secret_backend_connection" "this" {
+  for_each = var.database_connections
+
+  name              = each.value.name
+  backend           = each.value.backend
+  allowed_roles     = each.value.allowed_roles
+  plugin_name       = each.value.plugin_name
+  verify_connection = each.value.verify_connection
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "postgresql" {
+    for_each = each.value.postgresql != null ? [each.value.postgresql] : []
+    content {
+      max_open_connections    = postgresql.value.max_open_connections
+      max_idle_connections    = postgresql.value.max_idle_connections
+      max_connection_lifetime = postgresql.value.max_connection_lifetime
+      username_template       = postgresql.value.username_template
+    }
+  }
+
+  dynamic "mysql" {
+    for_each = each.value.mysql != null ? [each.value.mysql] : []
+    content {
+      connection_url          = mysql.value.connection_url
+      max_open_connections    = mysql.value.max_open_connections
+      max_idle_connections    = mysql.value.max_idle_connections
+      max_connection_lifetime = mysql.value.max_connection_lifetime
+      username_template       = mysql.value.username_template
+    }
+  }
+}
+
+resource "vault_database_secret_backend_role" "this" {
+  for_each = var.database_roles
+
+  name                  = each.value.name
+  backend               = each.value.backend
+  db_name               = each.value.db_name
+  creation_statements   = each.value.creation_statements
+  revocation_statements = each.value.revocation_statements
+  default_ttl           = each.value.default_ttl
+  max_ttl               = each.value.max_ttl
+  namespace             = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_database_secret_backend_static_role" "this" {
+  for_each = var.database_static_roles
+
+  name                = each.value.name
+  backend             = each.value.backend
+  db_name             = each.value.db_name
+  username            = each.value.username
+  rotation_period     = each.value.rotation_period
+  rotation_window     = each.value.rotation_window
+  rotation_statements = each.value.rotation_statements
+  namespace           = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# PKI Secret Backend (Phase 3)
+###############################################################################
+
+resource "vault_pki_secret_backend_role" "this" {
+  for_each = var.pki_roles
+
+  name               = each.value.name
+  backend            = each.value.backend
+  ttl                = each.value.ttl
+  max_ttl            = each.value.max_ttl
+  allow_localhost    = each.value.allow_localhost
+  allowed_domains    = each.value.allowed_domains
+  allow_bare_domains = each.value.allow_bare_domains
+  allow_subdomains   = each.value.allow_subdomains
+  allow_any_name     = each.value.allow_any_name
+  enforce_hostnames  = each.value.enforce_hostnames
+  allow_ip_sans      = each.value.allow_ip_sans
+  server_flag        = each.value.server_flag
+  client_flag        = each.value.client_flag
+  key_type           = each.value.key_type
+  key_bits           = each.value.key_bits
+  no_store           = each.value.no_store
+  namespace          = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# AWS Secret Backend (Phase 3)
+###############################################################################
+
+resource "vault_aws_secret_backend_role" "this" {
+  for_each = var.aws_roles
+
+  name            = each.value.name
+  backend         = each.value.backend
+  credential_type = each.value.credential_type
+  policy_arns     = each.value.policy_arns
+  policy_document = each.value.policy_document
+  role_arns       = each.value.role_arns
+  default_sts_ttl = each.value.default_sts_ttl
+  max_sts_ttl     = each.value.max_sts_ttl
+  iam_groups      = each.value.iam_groups
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+###############################################################################
+# GitHub Auth Backend (Phase 3)
+###############################################################################
+
+resource "vault_github_auth_backend" "this" {
+  for_each = var.github_auth_backends
+
+  path            = each.value.path
+  organization    = each.value.organization
+  organization_id = each.value.organization_id
+  base_url        = each.value.base_url
+  description     = each.value.description
+  namespace       = each.value.namespace != null ? each.value.namespace : var.namespace
+
+  dynamic "tune" {
+    for_each = each.value.tune != null ? [each.value.tune] : []
+    content {
+      default_lease_ttl  = tune.value.default_lease_ttl
+      max_lease_ttl      = tune.value.max_lease_ttl
+      listing_visibility = tune.value.listing_visibility
+      token_type         = tune.value.token_type
+    }
+  }
 }
