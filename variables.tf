@@ -197,3 +197,40 @@ variable "generic_endpoints" {
   }))
   default = {}
 }
+###############################################################################
+# Identity Entities
+###############################################################################
+
+variable "identity_entities" {
+  description = "Map of identity entities to create."
+  type = map(object({
+    name              = optional(string, null)
+    metadata          = optional(map(string), null)
+    policies          = optional(list(string), null)
+    external_policies = optional(bool, false)
+    disabled          = optional(bool, false)
+    namespace         = optional(string, null)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Identity Groups
+###############################################################################
+
+variable "identity_groups" {
+  description = "Map of identity groups to create."
+  type = map(object({
+    name                       = optional(string, null)
+    type                       = optional(string, "internal")
+    metadata                   = optional(map(string), null)
+    policies                   = optional(list(string), null)
+    external_policies          = optional(bool, false)
+    member_group_ids           = optional(list(string), null)
+    member_entity_ids          = optional(list(string), null)
+    external_member_entity_ids = optional(bool, false)
+    external_member_group_ids  = optional(bool, false)
+    namespace                  = optional(string, null)
+  }))
+  default = {}
+}

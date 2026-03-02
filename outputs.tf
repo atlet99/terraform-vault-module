@@ -199,3 +199,40 @@ output "generic_endpoint_write_data_json" {
   description = "Map of generic endpoint keys to their write_data_json strings."
   value       = { for k, v in vault_generic_endpoint.this : k => v.write_data_json }
 }
+###############################################################################
+# Identity Entities
+###############################################################################
+
+output "identity_entities" {
+  description = "Full identity entity objects keyed by variable key. Contains name and id."
+  value = {
+    for k, v in vault_identity_entity.this : k => {
+      name = v.name
+      id   = v.id
+    }
+  }
+}
+
+output "identity_entity_ids" {
+  description = "Map of identity entity keys to their IDs."
+  value       = { for k, v in vault_identity_entity.this : k => v.id }
+}
+
+###############################################################################
+# Identity Groups
+###############################################################################
+
+output "identity_groups" {
+  description = "Full identity group objects keyed by variable key. Contains name and id."
+  value = {
+    for k, v in vault_identity_group.this : k => {
+      name = v.name
+      id   = v.id
+    }
+  }
+}
+
+output "identity_group_ids" {
+  description = "Map of identity group keys to their IDs."
+  value       = { for k, v in vault_identity_group.this : k => v.id }
+}

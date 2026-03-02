@@ -212,3 +212,36 @@ resource "vault_generic_endpoint" "this" {
   ignore_absent_fields = each.value.ignore_absent_fields
   write_fields         = each.value.write_fields
 }
+###############################################################################
+# Identity Entities
+###############################################################################
+
+resource "vault_identity_entity" "this" {
+  for_each = var.identity_entities
+
+  name              = each.value.name != null ? each.value.name : each.key
+  metadata          = each.value.metadata
+  policies          = each.value.policies
+  external_policies = each.value.external_policies
+  disabled          = each.value.disabled
+  namespace         = each.value.namespace
+}
+
+###############################################################################
+# Identity Groups
+###############################################################################
+
+resource "vault_identity_group" "this" {
+  for_each = var.identity_groups
+
+  name                       = each.value.name != null ? each.value.name : each.key
+  type                       = each.value.type
+  metadata                   = each.value.metadata
+  policies                   = each.value.policies
+  external_policies          = each.value.external_policies
+  member_group_ids           = each.value.member_group_ids
+  member_entity_ids          = each.value.member_entity_ids
+  external_member_entity_ids = each.value.external_member_entity_ids
+  external_member_group_ids  = each.value.external_member_group_ids
+  namespace                  = each.value.namespace
+}

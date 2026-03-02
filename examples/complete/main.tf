@@ -162,6 +162,31 @@ module "vault" {
       disable_delete = true
     }
   }
+  # -- Identity Entities ------------------------------------------------------
+
+  identity_entities = {
+    john_doe = {
+      name     = "john-doe"
+      metadata = { team = "platform", role = "engineer" }
+      policies = ["readonly"]
+    }
+
+    app_servive = {
+      name     = "app-service"
+      metadata = { project = "billing" }
+      policies = ["app_team"]
+    }
+  }
+
+  # -- Identity Groups ---------------------------------------------------------
+
+  identity_groups = {
+    platform_team = {
+      name     = "platform-team"
+      metadata = { department = "infrastructure" }
+      policies = ["admin"]
+    }
+  }
 }
 
 ###############################################################################
@@ -182,4 +207,12 @@ output "policy_names" {
 
 output "kubernetes_auth_paths" {
   value = module.vault.kubernetes_auth_backend_paths
+}
+
+output "identity_entity_ids" {
+  value = module.vault.identity_entity_ids
+}
+
+output "identity_group_ids" {
+  value = module.vault.identity_group_ids
 }
