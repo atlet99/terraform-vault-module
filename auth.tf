@@ -787,3 +787,55 @@ resource "vault_alicloud_auth_backend_role" "this" {
   token_type              = each.value.token_type
   namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
 }
+
+###############################################################################
+# Advanced Authentication
+###############################################################################
+
+resource "vault_approle_auth_backend_role_secret_id" "this" {
+  for_each = var.approle_auth_role_secret_ids
+
+  backend           = each.value.backend
+  role_name         = each.value.role_name
+  metadata          = each.value.metadata
+  cidr_list         = each.value.cidr_list
+  token_bound_cidrs = each.value.token_bound_cidrs
+  secret_id         = each.value.secret_id
+  wrapping_ttl      = each.value.wrapping_ttl
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_aws_auth_backend_login" "this" {
+  for_each = var.aws_auth_backend_logins
+
+  backend                 = each.value.backend
+  role                    = each.value.role
+  identity                = each.value.identity
+  signature               = each.value.signature
+  pkcs7                   = each.value.pkcs7
+  nonce                   = each.value.nonce
+  iam_http_request_method = each.value.iam_http_request_method
+  iam_request_url         = each.value.iam_request_url
+  iam_request_body        = each.value.iam_request_body
+  iam_request_headers     = each.value.iam_request_headers
+  namespace               = each.value.namespace != null ? each.value.namespace : var.namespace
+}
+
+resource "vault_token" "this" {
+  for_each = var.tokens
+
+  role_name         = each.value.role_name
+  policies          = each.value.policies
+  no_parent         = each.value.no_parent
+  no_default_policy = each.value.no_default_policy
+  renewable         = each.value.renewable
+  ttl               = each.value.ttl
+  explicit_max_ttl  = each.value.explicit_max_ttl
+  display_name      = each.value.display_name
+  num_uses          = each.value.num_uses
+  period            = each.value.period
+  renew_min_lease   = each.value.renew_min_lease
+  renew_increment   = each.value.renew_increment
+  metadata          = each.value.metadata
+  namespace         = each.value.namespace != null ? each.value.namespace : var.namespace
+}

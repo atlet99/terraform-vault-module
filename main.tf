@@ -78,3 +78,29 @@ resource "vault_raft_snapshot_agent_config" "this" {
   azure_endpoint                = each.value.azure_endpoint
   namespace                     = each.value.namespace != null ? each.value.namespace : var.namespace
 }
+
+###############################################################################
+# Plugins
+###############################################################################
+
+resource "vault_plugin" "this" {
+  for_each = var.plugins
+
+  type      = each.value.type
+  name      = each.value.name
+  command   = each.value.command
+  sha256    = each.value.sha256
+  version   = each.value.version
+  args      = each.value.args
+  env       = each.value.env
+  oci_image = each.value.oci_image
+  runtime   = each.value.runtime
+}
+
+resource "vault_plugin_pinned_version" "this" {
+  for_each = var.plugin_pinned_versions
+
+  type    = each.value.type
+  name    = each.value.name
+  version = each.value.version
+}

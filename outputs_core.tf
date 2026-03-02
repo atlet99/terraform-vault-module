@@ -205,3 +205,28 @@ output "raft_snapshot_agent_configs" {
   description = "Map of Raft snapshot agent configuration keys to their IDs."
   value       = { for k, v in vault_raft_snapshot_agent_config.this : k => v.id }
 }
+
+###############################################################################
+# Plugins
+###############################################################################
+
+output "plugins" {
+  description = "Map of registered plugins."
+  value = {
+    for k, v in vault_plugin.this : k => {
+      name = v.name
+      type = v.type
+    }
+  }
+}
+
+output "plugin_pinned_versions" {
+  description = "Map of pinned plugin versions."
+  value = {
+    for k, v in vault_plugin_pinned_version.this : k => {
+      name    = v.name
+      type    = v.type
+      version = v.version
+    }
+  }
+}

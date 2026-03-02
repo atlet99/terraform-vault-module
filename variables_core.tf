@@ -223,3 +223,33 @@ variable "raft_snapshot_agent_configs" {
   }))
   default = {}
 }
+
+###############################################################################
+# Plugins
+###############################################################################
+
+variable "plugins" {
+  description = "A map of Vault plugins to register."
+  type = map(object({
+    type      = string
+    name      = string
+    command   = string
+    sha256    = string
+    version   = optional(string)
+    args      = optional(list(string))
+    env       = optional(list(string))
+    oci_image = optional(string)
+    runtime   = optional(string)
+  }))
+  default = {}
+}
+
+variable "plugin_pinned_versions" {
+  description = "A map of pinned plugin versions."
+  type = map(object({
+    type    = string
+    name    = string
+    version = string
+  }))
+  default = {}
+}
