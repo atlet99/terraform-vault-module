@@ -631,3 +631,386 @@ variable "identity_mfa_totp" {
   }))
   default = {}
 }
+
+###############################################################################
+# Azure Secret Backend (Phase 5)
+###############################################################################
+
+variable "azure_secret_backends" {
+  description = "A map of Azure secret backends to configure."
+  type = map(object({
+    path            = optional(string, "azure")
+    description     = optional(string, "Azure secret backend")
+    subscription_id = string
+    tenant_id       = string
+    client_id       = optional(string)
+    client_secret   = optional(string)
+    environment     = optional(string, "AzurePublicCloud")
+    namespace       = optional(string)
+  }))
+  default = {}
+}
+
+variable "azure_secret_backend_roles" {
+  description = "A map of roles for Azure secret backends."
+  type = map(object({
+    role                  = string
+    backend               = optional(string, "azure")
+    namespace             = optional(string)
+    azure_roles           = optional(list(any))
+    azure_groups          = optional(list(any))
+    application_object_id = optional(string)
+    ttl                   = optional(string)
+    max_ttl               = optional(string)
+    permanently_delete    = optional(bool)
+  }))
+  default = {}
+}
+
+###############################################################################
+# GCP Secret Backend (Phase 5)
+###############################################################################
+
+variable "gcp_secret_backends" {
+  description = "A map of GCP secret backends to configure."
+  type = map(object({
+    path                      = optional(string, "gcp")
+    description               = optional(string, "GCP secret backend")
+    credentials               = optional(string)
+    default_lease_ttl_seconds = optional(number)
+    max_lease_ttl_seconds     = optional(number)
+    namespace                 = optional(string)
+  }))
+  default = {}
+}
+
+variable "gcp_secret_backend_rolesets" {
+  description = "A map of rolesets for GCP secret backends."
+  type = map(object({
+    roleset      = string
+    backend      = optional(string, "gcp")
+    project      = string
+    secret_type  = string
+    bindings     = list(any)
+    token_scopes = optional(list(string))
+    namespace    = optional(string)
+  }))
+  default = {}
+}
+
+variable "gcp_secret_backend_static_accounts" {
+  description = "A map of static accounts for GCP secret backends."
+  type = map(object({
+    static_account        = string
+    backend               = optional(string, "gcp")
+    service_account_email = string
+    secret_type           = string
+    token_scopes          = optional(list(string))
+    bindings              = optional(list(any))
+    namespace             = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# LDAP Secret Backend (Phase 5 - supersedes AD)
+###############################################################################
+
+variable "ldap_secret_backends" {
+  description = "A map of LDAP secret backends to configure."
+  type = map(object({
+    path                = optional(string, "ldap")
+    description         = optional(string, "LDAP secret backend")
+    binddn              = string
+    bindpass            = optional(string)
+    bindpass_wo         = optional(string)
+    bindpass_wo_version = optional(number)
+    url                 = optional(string)
+    userdn              = optional(string)
+    userattr            = optional(string)
+    upndomain           = optional(string)
+    insecure_tls        = optional(bool)
+    starttls            = optional(bool)
+    certificate         = optional(string)
+    client_tls_cert     = optional(string)
+    client_tls_key      = optional(string)
+    password_policy     = optional(string)
+    schema              = optional(string)
+    connection_timeout  = optional(number)
+    request_timeout     = optional(number)
+    credential_type     = optional(string)
+    namespace           = optional(string)
+  }))
+  default = {}
+}
+
+variable "ldap_secret_backend_library_sets" {
+  description = "A map of library sets for LDAP secret backends."
+  type = map(object({
+    name                         = string
+    mount                        = optional(string, "ldap")
+    service_account_names        = list(string)
+    ttl                          = optional(number)
+    max_ttl                      = optional(number)
+    disable_check_in_enforcement = optional(bool)
+    namespace                    = optional(string)
+  }))
+  default = {}
+}
+
+variable "ldap_secret_backend_static_roles" {
+  description = "A map of static roles for LDAP secret backends."
+  type = map(object({
+    role_name            = string
+    mount                = optional(string, "ldap")
+    username             = string
+    dn                   = optional(string)
+    rotation_period      = number
+    skip_import_rotation = optional(bool)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Secrets Sync (Phase 5)
+###############################################################################
+
+variable "secrets_sync_config" {
+  description = "Global configuration for secrets sync."
+  type = object({
+    disabled       = optional(bool)
+    queue_capacity = optional(number)
+    namespace      = optional(string)
+  })
+  default = null
+}
+
+variable "secrets_sync_aws_destinations" {
+  description = "A map of AWS destinations for secrets sync."
+  type = map(object({
+    name                 = string
+    access_key_id        = optional(string)
+    secret_access_key    = optional(string)
+    region               = optional(string)
+    role_arn             = optional(string)
+    external_id          = optional(string)
+    secret_name_template = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "secrets_sync_azure_destinations" {
+  description = "A map of Azure destinations for secrets sync."
+  type = map(object({
+    name                 = string
+    client_id            = optional(string)
+    client_secret        = optional(string)
+    tenant_id            = optional(string)
+    key_vault_uri        = optional(string)
+    secret_name_template = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "secrets_sync_gcp_destinations" {
+  description = "A map of GCP destinations for secrets sync."
+  type = map(object({
+    name                 = string
+    credentials          = optional(string)
+    project_id           = optional(string)
+    secret_name_template = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "secrets_sync_gh_destinations" {
+  description = "A map of GitHub destinations for secrets sync."
+  type = map(object({
+    name                 = string
+    access_token         = optional(string)
+    repository_owner     = optional(string)
+    repository_name      = optional(string)
+    secret_name_template = optional(string)
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+variable "secrets_sync_associations" {
+  description = "A map of associations between secrets and destinations."
+  type = map(object({
+    type        = string
+    name        = string
+    mount       = string
+    secret_name = string
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Resource Quotas (Phase 5)
+###############################################################################
+
+variable "quota_rate_limits" {
+  description = "A map of rate limit quotas to configure."
+  type = map(object({
+    name           = string
+    path           = optional(string)
+    rate           = number
+    interval       = optional(number)
+    block_interval = optional(number)
+    role           = optional(string)
+    inheritable    = optional(bool)
+    group_by       = optional(string)
+    namespace      = optional(string)
+  }))
+  default = {}
+}
+
+variable "quota_lease_counts" {
+  description = "A map of lease count quotas to configure."
+  type = map(object({
+    name        = string
+    path        = optional(string)
+    max_leases  = number
+    role        = optional(string)
+    inheritable = optional(bool)
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# Identity OIDC Provider (Phase 5)
+###############################################################################
+
+variable "identity_oidc_scopes" {
+  description = "A map of Identity OIDC scopes."
+  type = map(object({
+    name        = string
+    template    = optional(string)
+    description = optional(string)
+    namespace   = optional(string)
+  }))
+  default = {}
+}
+
+variable "identity_oidc_assignments" {
+  description = "A map of Identity OIDC assignments."
+  type = map(object({
+    name       = string
+    entity_ids = optional(list(string))
+    group_ids  = optional(list(string))
+    namespace  = optional(string)
+  }))
+  default = {}
+}
+
+variable "identity_oidc_providers" {
+  description = "A map of Identity OIDC providers."
+  type = map(object({
+    name               = string
+    https_enabled      = optional(bool, true)
+    issuer_host        = optional(string)
+    allowed_client_ids = optional(list(string))
+    scopes_supported   = optional(list(string))
+    namespace          = optional(string)
+  }))
+  default = {}
+}
+
+variable "identity_oidc_roles" {
+  description = "A map of Identity OIDC roles."
+  type = map(object({
+    name      = string
+    key       = string
+    template  = optional(string)
+    ttl       = optional(number, 86400)
+    client_id = optional(string)
+    namespace = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# MFA Methods (Phase 5)
+###############################################################################
+
+variable "identity_mfa_okta" {
+  description = "A map of Okta MFA methods."
+  type = map(object({
+    name            = string
+    mount_accessor  = string
+    username_format = optional(string)
+    org_name        = string
+    api_token       = string
+    base_url        = optional(string, "okta.com")
+    primary_email   = optional(bool, false)
+    namespace       = optional(string)
+  }))
+  default = {}
+}
+
+variable "identity_mfa_duo" {
+  description = "A map of Duo MFA methods."
+  type = map(object({
+    name            = string
+    mount_accessor  = string
+    username_format = optional(string)
+    secret_key      = string
+    integration_key = string
+    api_hostname    = string
+    push_info       = optional(string)
+    namespace       = optional(string)
+  }))
+  default = {}
+}
+
+variable "identity_mfa_pingid" {
+  description = "A map of PingID MFA methods."
+  type = map(object({
+    name                 = string
+    mount_accessor       = string
+    username_format      = optional(string)
+    settings_file_base64 = string
+    namespace            = optional(string)
+  }))
+  default = {}
+}
+
+###############################################################################
+# PKI ACME support (Phase 5)
+###############################################################################
+
+variable "pki_secret_backend_config_acmes" {
+  description = "A map of PKI ACME configurations."
+  type = map(object({
+    backend                  = string
+    enabled                  = bool
+    default_directory_policy = optional(string)
+    allowed_roles            = optional(list(string))
+    allow_role_ext_key_usage = optional(bool)
+    allowed_issuers          = optional(list(string))
+    eab_policy               = optional(string)
+    dns_resolver             = optional(string)
+    max_ttl                  = optional(number)
+    namespace                = optional(string)
+  }))
+  default = {}
+}
+
+variable "pki_secret_backend_acme_eabs" {
+  description = "A map of PKI ACME EAB tokens."
+  type = map(object({
+    backend   = string
+    issuer    = optional(string)
+    role      = optional(string)
+    namespace = optional(string)
+  }))
+  default = {}
+}
