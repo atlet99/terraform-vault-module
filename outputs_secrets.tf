@@ -355,16 +355,8 @@ output "transform_transformations" {
   }
 }
 
+
 output "kv_secrets" {
   description = "Map of KV-V1 secret keys to their paths."
   value       = { for k, v in vault_kv_secret.this : k => v.path }
-}
-
-###############################################################################
-# Managed Keys
-###############################################################################
-
-output "managed_keys" {
-  description = "The ID of the Managed Keys resource."
-  value       = var.managed_keys != null ? vault_managed_keys.this[0].id : null
 }

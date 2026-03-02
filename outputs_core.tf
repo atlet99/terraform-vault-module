@@ -230,3 +230,13 @@ output "plugin_pinned_versions" {
     }
   }
 }
+
+###############################################################################
+# Managed Keys
+###############################################################################
+
+output "managed_keys" {
+  description = "Managed keys configuration (Vault Enterprise)."
+  value       = var.managed_keys != null ? vault_managed_keys.this[0] : null
+  sensitive   = true
+}
