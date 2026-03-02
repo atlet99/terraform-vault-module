@@ -113,6 +113,28 @@ variable "pki_roles" {
   default = {}
 }
 
+variable "pki_config_urls" {
+  description = "Map of PKI secret backend URL configurations."
+  type = map(object({
+    backend                 = string
+    issuing_certificates    = optional(list(string), null)
+    crl_distribution_points = optional(list(string), null)
+    ocsp_servers            = optional(list(string), null)
+    namespace               = optional(string, null)
+  }))
+  default = {}
+}
+
+variable "pki_config_cas" {
+  description = "Map of PKI secret backend CA configurations (import existing CA)."
+  type = map(object({
+    backend    = string
+    pem_bundle = string
+    namespace  = optional(string, null)
+  }))
+  default = {}
+}
+
 variable "pki_secret_backend_config_acmes" {
   description = "A map of PKI ACME configurations."
   type = map(object({

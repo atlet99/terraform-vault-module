@@ -168,16 +168,19 @@ output "generic_endpoints" {
       write_data_json = v.write_data_json
     }
   }
+  sensitive = true
 }
 
 output "generic_endpoint_write_data" {
   description = "Map of generic endpoint keys to their write_data maps."
   value       = { for k, v in vault_generic_endpoint.this : k => v.write_data }
+  sensitive   = true
 }
 
 output "generic_endpoint_write_data_json" {
   description = "Map of generic endpoint keys to their write_data_json strings."
   value       = { for k, v in vault_generic_endpoint.this : k => v.write_data_json }
+  sensitive   = true
 }
 
 ###############################################################################
