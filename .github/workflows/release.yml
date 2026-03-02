@@ -1,10 +1,9 @@
 name: Terraform Module Releaser
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize, closed]
-    branches:
-      - main
+  push:
+    tags:
+      - "v*"
 
 permissions:
   contents: write
@@ -15,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Terraform Module Releaser
         uses: techpivot/terraform-module-releaser@e481d6ddf336ed634db9b3dff9357a8ba51d7b58 # v2.0.0
         with:
           semver-mode: conventional-commits
           default-semver-level: patch
-          default-first-tag: v0.1.0
+          default-first-tag: v1.0.0
           terraform-docs-version: v0.21.0
           delete-legacy-tags: true
           disable-wiki: false
