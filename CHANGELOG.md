@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [FEATURE] - add support for Vault identity entity and group aliases, … (#1)
 - [FEATURE] - implement common auth methods and secret engines; (#2)
 - [FEATURE] - adding support for dynamic credentials, certificate management, and enhanced authentication configuration; (#3)
-- [FEATURE] - add support for SSH, Token, Audit, Identity OIDC, and MFA resources;
-- [FEATURE] - implement Vault authentication backends, identity, policies, secrets engines, and audit devices;
+- [FEATURE] - ssh secret backend roles, token auth backend roles, audit request headers, Identity OIDC & MFA; (#5)
+- [FEATURE] - add Azure, GCP, LDAP, PKI ACME secret backends and secrets sync resources;
 
 ### Fixed
 
