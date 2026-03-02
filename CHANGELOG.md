@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [FEATURE] - add AliCloud, OCI, SAML, and SPIFFE auth backend and role support;
 - [FEATURE] - add SAML, SPIFFE, OCI, AliCloud auth backends with full output coverage
 - [FEATURE] - add MFA login enforcement and Sentinel policy support
+- [FEATURE] - add Raft management, managed keys, and Vercel secrets sync;
+- [ADD] - expose new output variables for various Vault backends and configurations;
+- [ADD] - PKI config variables and mark generic endpoint outputs sensitive;
+- [FEATURE] - add static roles for AWS and Azure, and refine identity and secret backend outputs;
+- [FEATURE] - add support for various PKI backend configurations;
 
 ### Changed
 
